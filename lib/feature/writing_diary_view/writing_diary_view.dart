@@ -11,8 +11,10 @@ class WritingDiaryView extends StatefulWidget {
 }
 
 class _WritingDiaryViewState extends State<WritingDiaryView> {
-  final _emotions = ['기쁨', '슬픔', '놀람', '화남', '웃김'];
+  DateTime _selectedDate = DateTime.now();
   String? _selectedEmotions;
+  final String _imageUrl =
+      'https://cdn.imweb.me/upload/S20210807d1f68b7a970c2/7170113c6a983.jpg';
 
   @override
   void initState() {
@@ -24,7 +26,17 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('일기 작성'),
+        title: const Text(
+          '일기 작성',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        leading: IconButton(
+          icon: Icon(Icons.list),
+          onPressed: () {},
+        ),
         backgroundColor: Colors.white,
         elevation: 1,
         shadowColor: Colors.black,
@@ -33,123 +45,174 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
         minimum: const EdgeInsets.all(24),
         child: Column(
           children: [
-            Container(
-              decoration: BoxDecoration(border: Border.all()),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Expanded(
-                    child: Container(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              GestureDetector(
-                                onTapUp: (details) {
-                                  showModalBottomSheet(
-                                    context: context,
-                                    builder: (context) {
-                                      return Container(
-                                        height: 200,
-                                        color: Colors.amber,
-                                        child: Center(
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: <Widget>[
-                                              const Text('Modal BottomSheet'),
-                                              ElevatedButton(
-                                                child: const Text('Done!'),
-                                                onPressed: () =>
-                                                    Navigator.pop(context),
-                                              )
-                                            ],
-                                          ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Expanded(
+                  child: Container(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            GestureDetector(
+                              onTapUp: (details) {
+                                showModalBottomSheet(
+                                  context: context,
+                                  builder: (context) {
+                                    return Container(
+                                        height: 500,
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 16.0),
+                                          child: CalendarDatePicker(
+                                              initialDate: _selectedDate,
+                                              firstDate: DateTime(2023, 1, 1),
+                                              lastDate: DateTime.now(),
+                                              onDateChanged: (newDate) {
+                                                setState(() {
+                                                  _selectedDate = newDate;
+                                                });
+                                              }),
+                                        ));
+                                  },
+                                );
+                              },
+                              child: Container(
+                                child: Row(
+                                  children: [
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text('${_selectedDate.year}년'),
+                                        Row(
+                                          children: [
+                                            Text(
+                                                "${_selectedDate.month}월 ${_selectedDate.day}일"),
+                                          ],
                                         ),
-                                      );
-                                    },
-                                  );
-                                },
-                                child: Container(
-                                  child: const Row(
-                                    children: [
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text("2023년"),
-                                          Row(
-                                            children: [
-                                              Text("11월 13일"),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                      Icon(Icons.expand_more),
-                                    ],
-                                  ),
+                                      ],
+                                    ),
+                                    Icon(Icons.expand_more),
+                                  ],
                                 ),
                               ),
-                              Expanded(
-                                child: Container(),
-                              ),
-                            ],
-                          ),
-                          Row(
+                            ),
+                            Expanded(
+                              child: Container(),
+                            ),
+                          ],
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 24.0),
+                          child: Row(
                             children: [
                               Text("오늘 나의 감정은"),
                               Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 4.0),
-                                child: DropdownButton(
-                                  value: _selectedEmotions,
-                                  // style: TextStyle(color: Colors.black),
-                                  items: _emotions
-                                      .map((e) => DropdownMenuItem(
-                                            value: e,
-                                            child: Text(e),
-                                          ))
-                                      .toList(),
-                                  onChanged: (String? emotion) {
-                                    setState(() {
-                                      _selectedEmotions = emotion;
-                                    });
-                                  },
-                                ),
-                              ),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 4.0),
+                                  child: GestureDetector(
+                                    child: Row(
+                                      children: [
+                                        Text(_selectedEmotions!),
+                                        Icon(Icons.expand_more),
+                                      ],
+                                    ),
+                                    onTapUp: (details) {
+                                      showModalBottomSheet(
+                                        context: context,
+                                        builder: (context) {
+                                          return Container(
+                                            height: 200,
+                                            color: Colors.amber,
+                                            child: Center(
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: <Widget>[
+                                                  const Text(
+                                                      'Modal BottomSheet'),
+                                                  ElevatedButton(
+                                                    child: const Text('Done!'),
+                                                    onPressed: () =>
+                                                        Navigator.pop(context),
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      );
+                                    },
+                                  )),
                               Text("이야"),
                             ],
-                          )
-                        ],
-                      ),
+                          ),
+                        )
+                      ],
                     ),
                   ),
-                  Container(
-                    child: IconButton(
-                        onPressed: () {},
-                        icon: Icon(
-                          Icons.add_reaction,
-                          color: EmotionDiaryColors.grey0,
-                        )),
-                  ),
-                  IconButton(
-                      onPressed: () {},
-                      icon: Icon(Icons.thermostat,
-                          color: EmotionDiaryColors.grey0)),
-                ],
-              ),
+                ),
+                Container(
+                  child: IconButton(
+                      onPressed: () {
+                        showModalBottomSheet(
+                          context: context,
+                          builder: (context) {
+                            return Container(
+                              height: 200,
+                              color: Colors.amber,
+                              child: Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    const Text('Modal BottomSheet'),
+                                    ElevatedButton(
+                                      child: const Text('Done!'),
+                                      onPressed: () => Navigator.pop(context),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                      icon: Icon(
+                        Icons.add_reaction,
+                        color: EmotionDiaryColors.grey0,
+                      )),
+                ),
+                IconButton(
+                    onPressed: () {
+                      showModalBottomSheet(
+                        context: context,
+                        builder: (context) {
+                          return Container(
+                            height: 200,
+                            color: Colors.amber,
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  const Text('Modal BottomSheet'),
+                                  ElevatedButton(
+                                    child: const Text('Done!'),
+                                    onPressed: () => Navigator.pop(context),
+                                  )
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                    icon: Icon(Icons.thermostat,
+                        color: EmotionDiaryColors.grey0)),
+              ],
             ),
-            const Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 20.0),
-                child: Image(
-                    image: NetworkImage(
-                  'https://cdn.imweb.me/upload/S20210807d1f68b7a970c2/7170113c6a983.jpg',
-                )),
-              ),
-            ),
+            DiaryImage(imageUrl: _imageUrl),
             TextboxWithBorder(
               content:
                   "일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 ",
@@ -161,6 +224,25 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class DiaryImage extends StatelessWidget {
+  const DiaryImage({
+    super.key,
+    required String imageUrl,
+  }) : _imageUrl = imageUrl;
+
+  final String _imageUrl;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 20.0, top: 16.0),
+        child: Image(image: NetworkImage(_imageUrl)),
       ),
     );
   }
