@@ -1,4 +1,5 @@
 import 'package:emotion_diary/common/utils/colors.dart';
+import 'package:emotion_diary/common/utils/emojis.dart';
 import 'package:emotion_diary/common/widgets/black_button.dart';
 import 'package:emotion_diary/common/widgets/textbox_with_border.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +13,9 @@ class WritingDiaryView extends StatefulWidget {
 
 class _WritingDiaryViewState extends State<WritingDiaryView> {
   DateTime _selectedDate = DateTime.now();
+  int _selectedEmoji = 0;
   String? _selectedEmotions;
+
   final String _imageUrl =
       'https://cdn.imweb.me/upload/S20210807d1f68b7a970c2/7170113c6a983.jpg';
 
@@ -34,7 +37,7 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
           ),
         ),
         leading: IconButton(
-          icon: Icon(Icons.list),
+          icon: const Icon(Icons.list),
           onPressed: () {},
         ),
         backgroundColor: Colors.white,
@@ -94,7 +97,7 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
                                         ),
                                       ],
                                     ),
-                                    Icon(Icons.expand_more),
+                                    const Icon(Icons.expand_more),
                                   ],
                                 ),
                               ),
@@ -108,7 +111,7 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
                           padding: const EdgeInsets.only(top: 24.0),
                           child: Row(
                             children: [
-                              Text("오늘 나의 감정은"),
+                              const Text("오늘 나의 감정은"),
                               Padding(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 4.0),
@@ -116,7 +119,7 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
                                     child: Row(
                                       children: [
                                         Text(_selectedEmotions!),
-                                        Icon(Icons.expand_more),
+                                        const Icon(Icons.expand_more),
                                       ],
                                     ),
                                     onTapUp: (details) {
@@ -146,7 +149,7 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
                                       );
                                     },
                                   )),
-                              Text("이야"),
+                              const Text("이야"),
                             ],
                           ),
                         )
@@ -157,27 +160,7 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
                 Container(
                   child: IconButton(
                       onPressed: () {
-                        showModalBottomSheet(
-                          context: context,
-                          builder: (context) {
-                            return Container(
-                              height: 200,
-                              color: Colors.amber,
-                              child: Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    const Text('Modal BottomSheet'),
-                                    ElevatedButton(
-                                      child: const Text('Done!'),
-                                      onPressed: () => Navigator.pop(context),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
-                        );
+                        showEmojiSelectingBottomSheet(context);
                       },
                       icon: Icon(
                         Icons.add_reaction,
@@ -227,6 +210,105 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
       ),
     );
   }
+
+  Future<dynamic> showEmojiSelectingBottomSheet(BuildContext context) {
+    return showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return StatefulBuilder(
+              builder: (BuildContext context, StateSetter bottomState) {
+            return SizedBox(
+              height: 200,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                  ),
+                  child: Row(
+                    children: List<Widget>.generate(
+                      5,
+                      (index) => Padding(
+                        key: UniqueKey(),
+                        padding: const EdgeInsets.all(6.0),
+                        child: GestureDetector(
+                          onTap: () {
+                            bottomState(() {
+                              setState(() {
+                                _selectedEmoji = index;
+                              });
+                            });
+                          },
+                          child: AnimatedSize(
+                            duration: const Duration(milliseconds: 500),
+                            child: Image(
+                              image: AssetImage(Emojis.angry),
+                              width: 60 * (index == _selectedEmoji ? 1.5 : 1.0),
+                              height:
+                                  60 * (index == _selectedEmoji ? 1.5 : 1.0),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          });
+        });
+
+          Future<dynamic> showEmojiSelectingBottomSheet(BuildContext context) {
+    return showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return StatefulBuilder(
+              builder: (BuildContext context, StateSetter bottomState) {
+            return SizedBox(
+              height: 200,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                  ),
+                  child: Row(
+                    children: List<Widget>.generate(
+                      5,
+                      (index) => Padding(
+                        key: UniqueKey(),
+                        padding: const EdgeInsets.all(6.0),
+                        child: GestureDetector(
+                          onTap: () {
+                            bottomState(() {
+                              setState(() {
+                                _selectedEmoji = index;
+                              });
+                            });
+                          },
+                          child: AnimatedSize(
+                            duration: const Duration(milliseconds: 500),
+                            child: Image(
+                              image: AssetImage(Emojis.angry),
+                              width: 60 * (index == _selectedEmoji ? 1.5 : 1.0),
+                              height:
+                                  60 * (index == _selectedEmoji ? 1.5 : 1.0),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          });
+        });
+  }
+
+  // Future<dynamic> showEmojiSelectingBottomSheet(BuildContext context) {
+  //   return
+  // }
 }
 
 class DiaryImage extends StatelessWidget {
