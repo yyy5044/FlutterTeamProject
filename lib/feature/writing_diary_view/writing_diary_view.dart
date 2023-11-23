@@ -1,5 +1,6 @@
 import 'package:emotion_diary/common/utils/colors.dart';
 import 'package:emotion_diary/common/widgets/black_button.dart';
+import 'package:emotion_diary/common/widgets/textbox_with_border.dart';
 import 'package:flutter/material.dart';
 
 class WritingDiaryView extends StatelessWidget {
@@ -16,11 +17,17 @@ class WritingDiaryView extends StatelessWidget {
       ),
       body: SafeArea(
         minimum: const EdgeInsets.all(24),
-        child: Container(
-          child: BlackButton(
-            onPressed: () {},
-            label: 'test',
-          ),
+        child: Column(
+          children: [
+            TextboxWithBorder(
+              content:
+                  "일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 ",
+            ),
+            BlackButton(
+              onPressed: () {},
+              label: 'test',
+            ),
+          ],
         ),
       ),
     );
