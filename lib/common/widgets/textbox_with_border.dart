@@ -10,19 +10,16 @@ class TextboxWithBorder extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(10)),
+            borderRadius: const BorderRadius.all(Radius.circular(10)),
             border: Border.all(
               width: 1.5,
               color: EmotionDiaryColors.grey0,
             )),
-        child: Expanded(
-          child: Padding(
-            padding:
-                const EdgeInsets.symmetric(vertical: 12.0, horizontal: 18.0),
-            child: Text(
-              content,
-              textAlign: TextAlign.justify,
-            ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 18.0),
+          child: Text(
+            content,
+            textAlign: TextAlign.justify,
           ),
         ));
   }
