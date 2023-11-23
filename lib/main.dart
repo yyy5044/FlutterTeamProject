@@ -1,3 +1,4 @@
+import 'package:emotion_diary/feature/writing_diary_view/writing_diary_view.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -31,7 +32,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const WritingDiaryView(),
     );
   }
 }
