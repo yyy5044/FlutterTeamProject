@@ -3,6 +3,7 @@ import 'package:emotion_diary/common/utils/emojis.dart';
 import 'package:emotion_diary/common/utils/weathers.dart';
 import 'package:emotion_diary/common/widgets/black_button.dart';
 import 'package:emotion_diary/common/widgets/textbox_with_border.dart';
+import 'package:emotion_diary/common/widgets/textform_with_border.dart';
 import 'package:flutter/material.dart';
 
 class WritingDiaryView extends StatefulWidget {
@@ -29,6 +30,8 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
 
   @override
   Widget build(BuildContext context) {
+    bool showSaveButton = MediaQuery.of(context).viewInsets.bottom == 0;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -177,14 +180,24 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
                         color: EmotionDiaryColors.grey0)),
               ],
             ),
-            DiaryImage(imageUrl: _imageUrl),
-            const TextboxWithBorder(
-              content: "일기내용 일기내용 ",
+            Visibility(
+              visible: showSaveButton,
+              child: DiaryImage(imageUrl: _imageUrl),
+              replacement: Expanded(
+                child: Container(),
+              ),
             ),
-            const SizedBox(height: 20),
-            BlackButton(
-              onPressed: () {},
-              label: 'test',
+            TextFormWithBorder(),
+            Visibility(
+              visible: showSaveButton,
+              child: const SizedBox(height: 20),
+            ),
+            Visibility(
+              visible: showSaveButton,
+              child: BlackButton(
+                onPressed: () {},
+                label: 'test',
+              ),
             ),
           ],
         ),
@@ -317,9 +330,12 @@ class DiaryImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.only(bottom: 20.0, top: 16.0),
-        child: Image(image: NetworkImage(_imageUrl)),
+      child: Container(
+        constraints: BoxConstraints(maxHeight: 200),
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 20.0, top: 16.0),
+          child: Image(image: NetworkImage(_imageUrl)),
+        ),
       ),
     );
   }
