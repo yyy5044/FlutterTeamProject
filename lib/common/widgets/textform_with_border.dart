@@ -2,8 +2,8 @@ import 'package:emotion_diary/common/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 class TextFormWithBorder extends StatelessWidget {
-  const TextFormWithBorder({super.key});
-
+  const TextFormWithBorder({super.key, required this.controller});
+  final TextEditingController controller;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -19,7 +19,7 @@ class TextFormWithBorder extends StatelessWidget {
           padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 18.0),
           child: SingleChildScrollView(
             child: TextField(
-              // controller: textarea,
+              controller: controller,
               keyboardType: TextInputType.multiline,
               maxLines: 6,
               style: Theme.of(context).textTheme.bodyMedium,

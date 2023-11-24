@@ -4,6 +4,7 @@ import 'package:emotion_diary/common/utils/colors.dart';
 import 'package:emotion_diary/common/utils/emojis.dart';
 import 'package:emotion_diary/common/utils/weathers.dart';
 import 'package:emotion_diary/common/widgets/black_button.dart';
+import 'package:emotion_diary/common/widgets/emotion_list_button.dart';
 import 'package:emotion_diary/common/widgets/icon_textbox_with_dotted_border.dart';
 import 'package:emotion_diary/common/widgets/textform_with_border.dart';
 import 'package:flutter/material.dart';
@@ -16,21 +17,28 @@ class WritingDiaryView extends StatefulWidget {
   State<WritingDiaryView> createState() => _WritingDiaryViewState();
 }
 
-// TODO: 간편하게 데이터 빼낸 뒤 저장할 수 있도록 로직 구현
 class _WritingDiaryViewState extends State<WritingDiaryView> {
+  List<String> sampleEmotionList = [
+    'sample1',
+    'sample2',
+    'sample3',
+    'sample4',
+    'sample5',
+    'sample6',
+    'sample7',
+  ];
+
+  TextEditingController _diaryFieldController = TextEditingController();
   DateTime _selectedDate = DateTime.now();
   int _selectedEmoji = 0;
   int _selectedWeather = 0;
-  String? _selectedEmotions;
-  XFile? _pickedFile = null;
-
-  final String _imageUrl =
-      'https://cdn.imweb.me/upload/S20210807d1f68b7a970c2/7170113c6a983.jpg';
+  int _selectedEmotion = 0;
+  XFile? _pickedFile;
+  String diary = "";
 
   @override
   void initState() {
     super.initState();
-    _selectedEmotions = '기쁨';
   }
 
   @override
@@ -98,6 +106,26 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
                           Expanded(
                             child: Container(),
                           ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: IconButton(
+                                onPressed: () {
+                                  showEmojiSelectingBottomSheet(context);
+                                },
+                                icon: Icon(
+                                  Icons.add_reaction,
+                                  color: EmotionDiaryColors.grey0,
+                                )),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: IconButton(
+                                onPressed: () {
+                                  showWeatherSelectingBottomSheet(context);
+                                },
+                                icon: Icon(Icons.thermostat,
+                                    color: EmotionDiaryColors.grey0)),
+                          ),
                         ],
                       ),
                       Padding(
@@ -115,7 +143,7 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
                                   child: Row(
                                     children: [
                                       Text(
-                                        _selectedEmotions!,
+                                        sampleEmotionList[_selectedEmotion],
                                         style: Theme.of(context)
                                             .textTheme
                                             .titleSmall,
@@ -124,29 +152,9 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
                                     ],
                                   ),
                                   onTapUp: (details) {
-                                    showModalBottomSheet(
-                                      context: context,
-                                      builder: (context) {
-                                        return Container(
-                                          height: 200,
-                                          color: Colors.amber,
-                                          child: Center(
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: <Widget>[
-                                                const Text('Modal BottomSheet'),
-                                                ElevatedButton(
-                                                  child: const Text('Done!'),
-                                                  onPressed: () =>
-                                                      Navigator.pop(context),
-                                                )
-                                              ],
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                    );
+                                    setState(() {
+                                      showEmotionSelectingBottomSheet(context);
+                                    });
                                   },
                                 )),
                             Text(
@@ -158,26 +166,6 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
                       )
                     ],
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: IconButton(
-                      onPressed: () {
-                        showEmojiSelectingBottomSheet(context);
-                      },
-                      icon: Icon(
-                        Icons.add_reaction,
-                        color: EmotionDiaryColors.grey0,
-                      )),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: IconButton(
-                      onPressed: () {
-                        showWeatherSelectingBottomSheet(context);
-                      },
-                      icon: Icon(Icons.thermostat,
-                          color: EmotionDiaryColors.grey0)),
                 ),
               ],
             ),
@@ -202,13 +190,16 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
                               label: "사진 추가하기",
                             )),
                         child: Image(
-                            image: FileImage(File(_pickedFile?.path ?? "")),
-                            fit: BoxFit.cover),
+                          image: FileImage(File(_pickedFile?.path ?? "")),
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     )),
               ),
             ),
-            TextFormWithBorder(),
+            TextFormWithBorder(
+              controller: _diaryFieldController,
+            ),
             Visibility(
               visible: showSaveButton,
               child: const SizedBox(height: 20),
@@ -216,13 +207,66 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
             Visibility(
               visible: showSaveButton,
               child: BlackButton(
-                onPressed: () {},
+                onPressed: () {
+                  _saveDiary();
+                },
                 label: '일기 작성하기',
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Future<dynamic> showEmotionSelectingBottomSheet(BuildContext context) {
+    return showModalBottomSheet(
+      isScrollControlled: true,
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+            builder: (BuildContext context, StateSetter bottomState) {
+          return Container(
+            clipBehavior: Clip.hardEdge,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(25.0),
+              color: EmotionDiaryColors.white0,
+            ),
+            height: 450,
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 20.0,
+                  horizontal: 16.0,
+                ),
+                child: Center(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List<Widget>.generate(
+                        sampleEmotionList.length,
+                        (index) => Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4.0),
+                          child: EmotionListButton(
+                            onPressed: () {
+                              bottomState(() {
+                                setState(() {
+                                  _selectedEmotion = index;
+                                });
+                              });
+                            },
+                            label: sampleEmotionList[index],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        });
+      },
     );
   }
 
@@ -368,5 +412,15 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
     } else {
       debugPrint('이미지 선택안함');
     }
+  }
+
+  // TODO: 데이터 저장 구현하기
+  void _saveDiary() {
+    // DateTime _selectedDate   -> 날짜 DateTime
+    // int _selectedEmoji       -> 이모지 index
+    // int _selectedWeather     -> 날짜 index
+    // String _selectedEmotions -> 감정 String
+    // XFile? _pickedFile       -> 사진 XFile
+    // String diary             -> 일기 String
   }
 }
