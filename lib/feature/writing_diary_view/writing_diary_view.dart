@@ -1,5 +1,6 @@
 import 'package:emotion_diary/common/utils/colors.dart';
 import 'package:emotion_diary/common/utils/emojis.dart';
+import 'package:emotion_diary/common/utils/weathers.dart';
 import 'package:emotion_diary/common/widgets/black_button.dart';
 import 'package:emotion_diary/common/widgets/textbox_with_border.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +15,7 @@ class WritingDiaryView extends StatefulWidget {
 class _WritingDiaryViewState extends State<WritingDiaryView> {
   DateTime _selectedDate = DateTime.now();
   int _selectedEmoji = 0;
+  int _selectedWeather = 0;
   String? _selectedEmotions;
 
   final String _imageUrl =
@@ -169,38 +171,17 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
                 ),
                 IconButton(
                     onPressed: () {
-                      showModalBottomSheet(
-                        context: context,
-                        builder: (context) {
-                          return Container(
-                            height: 200,
-                            color: Colors.amber,
-                            child: Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  const Text('Modal BottomSheet'),
-                                  ElevatedButton(
-                                    child: const Text('Done!'),
-                                    onPressed: () => Navigator.pop(context),
-                                  )
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                      );
+                      showWeatherSelectingBottomSheet(context);
                     },
                     icon: Icon(Icons.thermostat,
                         color: EmotionDiaryColors.grey0)),
               ],
             ),
             DiaryImage(imageUrl: _imageUrl),
-            TextboxWithBorder(
-              content:
-                  "일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 일기내용 ",
+            const TextboxWithBorder(
+              content: "일기내용 일기내용 ",
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             BlackButton(
               onPressed: () {},
               label: 'test',
@@ -242,7 +223,7 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
                           child: AnimatedSize(
                             duration: const Duration(milliseconds: 500),
                             child: Image(
-                              image: AssetImage(Emojis.angry),
+                              image: AssetImage(Emojis.emojiList[index]),
                               width: 60 * (index == _selectedEmoji ? 1.5 : 1.0),
                               height:
                                   60 * (index == _selectedEmoji ? 1.5 : 1.0),
@@ -257,8 +238,9 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
             );
           });
         });
+  }
 
-          Future<dynamic> showEmojiSelectingBottomSheet(BuildContext context) {
+  Future<dynamic> showWeatherSelectingBottomSheet(BuildContext context) {
     return showModalBottomSheet(
         context: context,
         builder: (context) {
@@ -282,17 +264,31 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
                           onTap: () {
                             bottomState(() {
                               setState(() {
-                                _selectedEmoji = index;
+                                _selectedWeather = index;
                               });
                             });
                           },
-                          child: AnimatedSize(
-                            duration: const Duration(milliseconds: 500),
-                            child: Image(
-                              image: AssetImage(Emojis.angry),
-                              width: 60 * (index == _selectedEmoji ? 1.5 : 1.0),
-                              height:
-                                  60 * (index == _selectedEmoji ? 1.5 : 1.0),
+                          child: Container(
+                            width: 60,
+                            height: 60,
+                            child: Stack(
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: index == _selectedWeather
+                                        ? Weathers.weatherColorList[index]
+                                        : Colors.transparent,
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(4.0),
+                                  child: Image(
+                                    image:
+                                        AssetImage(Weathers.weatherList[index]),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ),
@@ -305,7 +301,6 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
           });
         });
   }
-
   // Future<dynamic> showEmojiSelectingBottomSheet(BuildContext context) {
   //   return
   // }

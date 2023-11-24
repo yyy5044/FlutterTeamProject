@@ -9,6 +9,8 @@ class TextboxWithBorder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+        height: 160,
+        width: double.infinity,
         decoration: BoxDecoration(
             borderRadius: const BorderRadius.all(Radius.circular(10)),
             border: Border.all(
@@ -17,9 +19,11 @@ class TextboxWithBorder extends StatelessWidget {
             )),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 18.0),
-          child: Text(
-            content,
-            textAlign: TextAlign.justify,
+          child: SingleChildScrollView(
+            child: Text(
+              content,
+              textAlign: TextAlign.justify,
+            ),
           ),
         ));
   }
