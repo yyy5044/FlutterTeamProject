@@ -4,6 +4,7 @@ import 'package:emotion_diary/common/utils/colors.dart';
 import 'package:emotion_diary/common/utils/emojis.dart';
 import 'package:emotion_diary/common/utils/weathers.dart';
 import 'package:emotion_diary/common/widgets/black_button.dart';
+import 'package:emotion_diary/common/widgets/icon_textbox_with_dotted_border.dart';
 import 'package:emotion_diary/common/widgets/textform_with_border.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -192,15 +193,17 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
                       padding: const EdgeInsets.only(bottom: 20.0, top: 16.0),
                       child: Visibility(
                         visible: _pickedFile != null,
+                        replacement: GestureDetector(
+                            onTapUp: (details) {
+                              _getPhotoLibraryImage();
+                            },
+                            child: const IconTextboxWithDottedBorder(
+                              icon: Icons.add_photo_alternate_outlined,
+                              label: "사진 추가하기",
+                            )),
                         child: Image(
                             image: FileImage(File(_pickedFile?.path ?? "")),
                             fit: BoxFit.cover),
-                        replacement: ElevatedButton(
-                          child: Text("HI"),
-                          onPressed: () {
-                            _getPhotoLibraryImage();
-                          },
-                        ),
                       ),
                     )),
               ),
@@ -363,46 +366,7 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
         _pickedFile = pickedFile;
       });
     } else {
-      print('이미지 선택안함');
-    }
-  }
-}
-
-class DiaryImage extends StatelessWidget {
-  DiaryImage({super.key, pickedFile}) : _pickedFile = pickedFile;
-
-  late XFile? _pickedFile;
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-          constraints: const BoxConstraints(maxHeight: 200),
-          child: Padding(
-            padding: const EdgeInsets.only(bottom: 20.0, top: 16.0),
-            child: Visibility(
-              visible: _pickedFile != null,
-              child: Image(
-                  image: FileImage(File(_pickedFile?.path ?? "")),
-                  fit: BoxFit.cover),
-              replacement: ElevatedButton(
-                child: Text("HI"),
-                onPressed: () {
-                  _getPhotoLibraryImage();
-                },
-              ),
-            ),
-          )),
-    );
-  }
-
-  void _getPhotoLibraryImage() async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      _pickedFile = _pickedFile;
-    } else {
-      print('이미지 선택안함');
+      debugPrint('이미지 선택안함');
     }
   }
 }
