@@ -1,9 +1,11 @@
 class Emojis {
-  static String angry = 'assets/emoji/angry_face_3d.png';
-  static String surprised = 'assets/emoji/astonished_face_3d.png';
-  static String sad = 'assets/emoji/crying_face_3d.png';
-  static String smile = 'assets/emoji/slightly_smiling_face_3d.png';
-  static String bigSmile = 'assets/emoji/squinting_face_with_tongue_3d.png';
+  static String angry = 'assets/emoji/angry_emoji.png';
+  static String surprised = 'assets/emoji/surprised_emoji.png';
+  static String sad = 'assets/emoji/sad_emoji.png';
+  static String smile = 'assets/emoji/smile_emoji.png';
+  static String bigSmile = 'assets/emoji/big_smile_emoji.png';
+
+  static String emojiButtonIcon = 'assets/emoji/add_emoji_button.png';
 
   static List<String> emojiList = [
     bigSmile,

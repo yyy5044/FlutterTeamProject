@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 
 class Weathers {
-  static String rainy = 'assets/weather/cloud_with_lightning_and_rain_3d.png';
-  static String snowy = 'assets/weather/cloud_with_snow_3d.png';
-  static String windy = 'assets/weather/leaf_fluttering_in_wind_3d.png';
-  static String sunny = 'assets/weather/sun_3d.png';
-  static String sunnyWithCloud = 'assets/weather/sun_behind_large_cloud_3d.png';
+  static String rainy = 'assets/weather/weather=rainy.png';
+  static String snowy = 'assets/weather/weather=snowy.png';
+  static String windy = 'assets/weather/weather=windy.png';
+  static String sunny = 'assets/weather/weather=sunny.png';
+  static String cloudy = 'assets/weather/weather=cloudy.png';
+
+  static String weatherButtonIcon = 'assets/weather/weather=weather6.png';
 
   static List<String> weatherList = [
     sunny,
-    sunnyWithCloud,
+    cloudy,
     windy,
     rainy,
     snowy,
