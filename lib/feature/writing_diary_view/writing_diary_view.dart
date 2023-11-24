@@ -34,12 +34,9 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           '일기 작성',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(context).textTheme.titleSmall,
         ),
         leading: IconButton(
           icon: const Icon(Icons.list),
@@ -54,7 +51,7 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
         child: Column(
           children: [
             Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
                   child: Container(
@@ -65,46 +62,34 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
                           children: [
                             GestureDetector(
                               onTapUp: (details) {
-                                showModalBottomSheet(
-                                  context: context,
-                                  builder: (context) {
-                                    return Container(
-                                        height: 500,
-                                        child: Padding(
-                                          padding:
-                                              const EdgeInsets.only(top: 16.0),
-                                          child: CalendarDatePicker(
-                                              initialDate: _selectedDate,
-                                              firstDate: DateTime(2023, 1, 1),
-                                              lastDate: DateTime.now(),
-                                              onDateChanged: (newDate) {
-                                                setState(() {
-                                                  _selectedDate = newDate;
-                                                });
-                                              }),
-                                        ));
-                                  },
-                                );
+                                showDateSelectingBottomSheet(context);
                               },
-                              child: Container(
-                                child: Row(
-                                  children: [
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text('${_selectedDate.year}년'),
-                                        Row(
-                                          children: [
-                                            Text(
-                                                "${_selectedDate.month}월 ${_selectedDate.day}일"),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                    const Icon(Icons.expand_more),
-                                  ],
-                                ),
+                              child: Row(
+                                children: [
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        '${_selectedDate.year}년',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headlineSmall,
+                                      ),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            "${_selectedDate.month}월 ${_selectedDate.day}일",
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .titleLarge,
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                  const Icon(Icons.expand_more),
+                                ],
                               ),
                             ),
                             Expanded(
@@ -116,14 +101,22 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
                           padding: const EdgeInsets.only(top: 24.0),
                           child: Row(
                             children: [
-                              const Text("오늘 나의 감정은"),
+                              Text(
+                                "오늘 나의 감정은",
+                                style: Theme.of(context).textTheme.titleSmall,
+                              ),
                               Padding(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 4.0),
                                   child: GestureDetector(
                                     child: Row(
                                       children: [
-                                        Text(_selectedEmotions!),
+                                        Text(
+                                          _selectedEmotions!,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleSmall,
+                                        ),
                                         const Icon(Icons.expand_more),
                                       ],
                                     ),
@@ -154,7 +147,10 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
                                       );
                                     },
                                   )),
-                              const Text("이야"),
+                              Text(
+                                "이야",
+                                style: Theme.of(context).textTheme.titleSmall,
+                              ),
                             ],
                           ),
                         )
@@ -162,7 +158,8 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
                     ),
                   ),
                 ),
-                Container(
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: IconButton(
                       onPressed: () {
                         showEmojiSelectingBottomSheet(context);
@@ -172,20 +169,23 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
                         color: EmotionDiaryColors.grey0,
                       )),
                 ),
-                IconButton(
-                    onPressed: () {
-                      showWeatherSelectingBottomSheet(context);
-                    },
-                    icon: Icon(Icons.thermostat,
-                        color: EmotionDiaryColors.grey0)),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: IconButton(
+                      onPressed: () {
+                        showWeatherSelectingBottomSheet(context);
+                      },
+                      icon: Icon(Icons.thermostat,
+                          color: EmotionDiaryColors.grey0)),
+                ),
               ],
             ),
             Visibility(
               visible: showSaveButton,
-              child: DiaryImage(imageUrl: _imageUrl),
               replacement: Expanded(
                 child: Container(),
               ),
+              child: DiaryImage(imageUrl: _imageUrl),
             ),
             TextFormWithBorder(),
             Visibility(
@@ -196,12 +196,34 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
               visible: showSaveButton,
               child: BlackButton(
                 onPressed: () {},
-                label: 'test',
+                label: '일기 작성하기',
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Future<dynamic> showDateSelectingBottomSheet(BuildContext context) {
+    return showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Container(
+            height: 500,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 16.0),
+              child: CalendarDatePicker(
+                  initialDate: _selectedDate,
+                  firstDate: DateTime(2023, 1, 1),
+                  lastDate: DateTime.now(),
+                  onDateChanged: (newDate) {
+                    setState(() {
+                      _selectedDate = newDate;
+                    });
+                  }),
+            ));
+      },
     );
   }
 

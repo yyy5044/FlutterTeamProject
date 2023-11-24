@@ -16,20 +16,17 @@ class TextFormWithBorder extends StatelessWidget {
             color: EmotionDiaryColors.grey0,
           )),
       child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 18.0),
+          padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 18.0),
           child: SingleChildScrollView(
             child: TextField(
               // controller: textarea,
               keyboardType: TextInputType.multiline,
               maxLines: 6,
-              decoration: InputDecoration(
-                contentPadding: EdgeInsets.all(0),
-                hintText: "Enter Remarks",
-                border: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.transparent)),
-                focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.transparent)),
-              ),
+              style: Theme.of(context).textTheme.bodyMedium,
+              decoration: const InputDecoration(
+                  contentPadding: EdgeInsets.all(0),
+                  border: InputBorder.none,
+                  hintText: "무슨 일이 있었나요?"),
             ),
           )),
     );
