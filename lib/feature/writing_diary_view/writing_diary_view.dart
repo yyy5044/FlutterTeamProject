@@ -1,10 +1,12 @@
+import 'dart:io';
+
 import 'package:emotion_diary/common/utils/colors.dart';
 import 'package:emotion_diary/common/utils/emojis.dart';
 import 'package:emotion_diary/common/utils/weathers.dart';
 import 'package:emotion_diary/common/widgets/black_button.dart';
-import 'package:emotion_diary/common/widgets/textbox_with_border.dart';
 import 'package:emotion_diary/common/widgets/textform_with_border.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class WritingDiaryView extends StatefulWidget {
   const WritingDiaryView({super.key});
@@ -13,11 +15,13 @@ class WritingDiaryView extends StatefulWidget {
   State<WritingDiaryView> createState() => _WritingDiaryViewState();
 }
 
+// TODO: 간편하게 데이터 빼낸 뒤 저장할 수 있도록 로직 구현
 class _WritingDiaryViewState extends State<WritingDiaryView> {
   DateTime _selectedDate = DateTime.now();
   int _selectedEmoji = 0;
   int _selectedWeather = 0;
   String? _selectedEmotions;
+  XFile? _pickedFile = null;
 
   final String _imageUrl =
       'https://cdn.imweb.me/upload/S20210807d1f68b7a970c2/7170113c6a983.jpg';
@@ -54,108 +58,104 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
-                  child: Container(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          GestureDetector(
+                            onTapUp: (details) {
+                              showDateSelectingBottomSheet(context);
+                            },
+                            child: Row(
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      '${_selectedDate.year}년',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .headlineSmall,
+                                    ),
+                                    Row(
+                                      children: [
+                                        Text(
+                                          "${_selectedDate.month}월 ${_selectedDate.day}일",
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleLarge,
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                const Icon(Icons.expand_more),
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            child: Container(),
+                          ),
+                        ],
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 24.0),
+                        child: Row(
                           children: [
-                            GestureDetector(
-                              onTapUp: (details) {
-                                showDateSelectingBottomSheet(context);
-                              },
-                              child: Row(
-                                children: [
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                            Text(
+                              "오늘 나의 감정은",
+                              style: Theme.of(context).textTheme.titleSmall,
+                            ),
+                            Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 4.0),
+                                child: GestureDetector(
+                                  child: Row(
                                     children: [
                                       Text(
-                                        '${_selectedDate.year}년',
+                                        _selectedEmotions!,
                                         style: Theme.of(context)
                                             .textTheme
-                                            .headlineSmall,
+                                            .titleSmall,
                                       ),
-                                      Row(
-                                        children: [
-                                          Text(
-                                            "${_selectedDate.month}월 ${_selectedDate.day}일",
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .titleLarge,
-                                          ),
-                                        ],
-                                      ),
+                                      const Icon(Icons.expand_more),
                                     ],
                                   ),
-                                  const Icon(Icons.expand_more),
-                                ],
-                              ),
-                            ),
-                            Expanded(
-                              child: Container(),
+                                  onTapUp: (details) {
+                                    showModalBottomSheet(
+                                      context: context,
+                                      builder: (context) {
+                                        return Container(
+                                          height: 200,
+                                          color: Colors.amber,
+                                          child: Center(
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: <Widget>[
+                                                const Text('Modal BottomSheet'),
+                                                ElevatedButton(
+                                                  child: const Text('Done!'),
+                                                  onPressed: () =>
+                                                      Navigator.pop(context),
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  },
+                                )),
+                            Text(
+                              "이야",
+                              style: Theme.of(context).textTheme.titleSmall,
                             ),
                           ],
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 24.0),
-                          child: Row(
-                            children: [
-                              Text(
-                                "오늘 나의 감정은",
-                                style: Theme.of(context).textTheme.titleSmall,
-                              ),
-                              Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 4.0),
-                                  child: GestureDetector(
-                                    child: Row(
-                                      children: [
-                                        Text(
-                                          _selectedEmotions!,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .titleSmall,
-                                        ),
-                                        const Icon(Icons.expand_more),
-                                      ],
-                                    ),
-                                    onTapUp: (details) {
-                                      showModalBottomSheet(
-                                        context: context,
-                                        builder: (context) {
-                                          return Container(
-                                            height: 200,
-                                            color: Colors.amber,
-                                            child: Center(
-                                              child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: <Widget>[
-                                                  const Text(
-                                                      'Modal BottomSheet'),
-                                                  ElevatedButton(
-                                                    child: const Text('Done!'),
-                                                    onPressed: () =>
-                                                        Navigator.pop(context),
-                                                  )
-                                                ],
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                      );
-                                    },
-                                  )),
-                              Text(
-                                "이야",
-                                style: Theme.of(context).textTheme.titleSmall,
-                              ),
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
+                      )
+                    ],
                   ),
                 ),
                 Padding(
@@ -185,7 +185,25 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
               replacement: Expanded(
                 child: Container(),
               ),
-              child: DiaryImage(imageUrl: _imageUrl),
+              child: Expanded(
+                child: Container(
+                    constraints: const BoxConstraints(maxHeight: 200),
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 20.0, top: 16.0),
+                      child: Visibility(
+                        visible: _pickedFile != null,
+                        child: Image(
+                            image: FileImage(File(_pickedFile?.path ?? "")),
+                            fit: BoxFit.cover),
+                        replacement: ElevatedButton(
+                          child: Text("HI"),
+                          onPressed: () {
+                            _getPhotoLibraryImage();
+                          },
+                        ),
+                      ),
+                    )),
+              ),
             ),
             TextFormWithBorder(),
             Visibility(
@@ -209,7 +227,7 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
     return showModalBottomSheet(
       context: context,
       builder: (context) {
-        return Container(
+        return SizedBox(
             height: 500,
             child: Padding(
               padding: const EdgeInsets.only(top: 16.0),
@@ -303,7 +321,7 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
                               });
                             });
                           },
-                          child: Container(
+                          child: SizedBox(
                             width: 60,
                             height: 60,
                             child: Stack(
@@ -336,29 +354,55 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
           });
         });
   }
-  // Future<dynamic> showEmojiSelectingBottomSheet(BuildContext context) {
-  //   return
-  // }
+
+  void _getPhotoLibraryImage() async {
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _pickedFile = pickedFile;
+      });
+    } else {
+      print('이미지 선택안함');
+    }
+  }
 }
 
 class DiaryImage extends StatelessWidget {
-  const DiaryImage({
-    super.key,
-    required String imageUrl,
-  }) : _imageUrl = imageUrl;
+  DiaryImage({super.key, pickedFile}) : _pickedFile = pickedFile;
 
-  final String _imageUrl;
+  late XFile? _pickedFile;
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: Container(
-        constraints: BoxConstraints(maxHeight: 200),
-        child: Padding(
-          padding: const EdgeInsets.only(bottom: 20.0, top: 16.0),
-          child: Image(image: NetworkImage(_imageUrl)),
-        ),
-      ),
+          constraints: const BoxConstraints(maxHeight: 200),
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 20.0, top: 16.0),
+            child: Visibility(
+              visible: _pickedFile != null,
+              child: Image(
+                  image: FileImage(File(_pickedFile?.path ?? "")),
+                  fit: BoxFit.cover),
+              replacement: ElevatedButton(
+                child: Text("HI"),
+                onPressed: () {
+                  _getPhotoLibraryImage();
+                },
+              ),
+            ),
+          )),
     );
+  }
+
+  void _getPhotoLibraryImage() async {
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      _pickedFile = _pickedFile;
+    } else {
+      print('이미지 선택안함');
+    }
   }
 }
