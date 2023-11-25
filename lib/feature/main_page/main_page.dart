@@ -19,7 +19,17 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Calendar with Emojis'),
+          title: Text(
+            '일기 작성',
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
+          leading: IconButton(
+            icon: const Icon(Icons.list),
+            onPressed: () {},
+          ),
+          backgroundColor: Colors.white,
+          elevation: 1,
+          shadowColor: Colors.black,
         ),
         body: Column(
           children: [
@@ -100,16 +110,21 @@ class _MainPageState extends State<MainPage> {
     setState(() {
       today = day;
       _selectedEvents.value = _getEvents(today);
-      events.addAll({today: [Event('1')]});
     });
   }
 
   List<Event> _getEvents(DateTime today) {
-    return events[today] ?? [];
+    DateTime dateWithoutTime = DateTime(today.year, today.month, today.day);
+    return events[dateWithoutTime] ?? [];
   }
 }
 
 class Event {
   Event(this.title);
   final String title;
+
+  @override
+  String toString() {
+    return title;
+  }
 }
