@@ -1,3 +1,4 @@
+import 'package:emotion_diary/common/widgets/icon_textbox_with_dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -31,77 +32,98 @@ class _MainPageState extends State<MainPage> {
           elevation: 1,
           shadowColor: Colors.black,
         ),
-        body: Column(
-          children: [
-            TableCalendar(
-              focusedDay: today,
-              firstDay: DateTime.utc(2023, 1, 1),
-              lastDay: DateTime.now(),
-              daysOfWeekHeight: 30,
-              headerStyle: const HeaderStyle(
-                titleCentered: true,
-                formatButtonVisible: false,
-                titleTextStyle: TextStyle(
-                  fontSize: 20.0,
+        body: SafeArea(
+          minimum: const EdgeInsets.all(24),
+          child: Column(
+            children: [
+              TableCalendar(
+                focusedDay: today,
+                firstDay: DateTime.utc(2023, 1, 1),
+                lastDay: DateTime.now(),
+                daysOfWeekHeight: 30,
+                headerStyle: const HeaderStyle(
+                  titleCentered: true,
+                  formatButtonVisible: false,
+                  titleTextStyle: TextStyle(
+                    fontSize: 20.0,
+                  ),
+                  headerPadding: EdgeInsets.symmetric(vertical: 4.0),
                 ),
-                headerPadding: EdgeInsets.symmetric(vertical: 4.0),
-              ),
-              calendarBuilders: CalendarBuilders(
-                dowBuilder: (context, day) {
-                  switch (day.weekday) {
-                    case 1:
-                      return Center(
-                        child: Text('월'),
-                      );
-                    case 2:
-                      return Center(
-                        child: Text('화'),
-                      );
-                    case 3:
-                      return Center(
-                        child: Text('수'),
-                      );
-                    case 4:
-                      return Center(
-                        child: Text('목'),
-                      );
-                    case 5:
-                      return Center(
-                        child: Text('금'),
-                      );
-                    case 6:
-                      return Center(
-                        child: Text('토'),
-                      );
-                    case 7:
-                      return Center(
-                        child: Text(
-                          '일',
-                          style: TextStyle(color: Colors.red),
-                        ),
-                      );
-                  }
-                },
-              ),
-              onDaySelected: _onDaySelected,
-              selectedDayPredicate: (day) => isSameDay(day, today),
+                calendarBuilders: CalendarBuilders(
+                  dowBuilder: (context, day) {
+                    switch (day.weekday) {
+                      case 1:
+                        return const Center(
+                          child: Text('월'),
+                        );
+                      case 2:
+                        return const Center(
+                          child: Text('화'),
+                        );
+                      case 3:
+                        return const Center(
+                          child: Text('수'),
+                        );
+                      case 4:
+                        return const Center(
+                          child: Text('목'),
+                        );
+                      case 5:
+                        return const Center(
+                          child: Text('금'),
+                        );
+                      case 6:
+                        return const Center(
+                          child: Text('토'),
+                        );
+                      case 7:
+                        return const Center(
+                          child: Text(
+                            '일',
+                            style: TextStyle(color: Colors.red),
+                          ),
+                        );
+                    }
+                  },
+                ),
+                onDaySelected: _onDaySelected,
+                selectedDayPredicate: (day) => isSameDay(day, today),
 
-              eventLoader: _getEvents,
-            ),
-            SizedBox(height: 20,),
-            Expanded(
-              child: ValueListenableBuilder<List<Event>>(
-                  valueListenable: _selectedEvents,
-                  builder: (context, value, _) {
-                    return ListView.builder(
-                      itemCount: value.length,
-                      itemBuilder: (context, index) {
-                        return ListTile(title: Text('${value[index]}'));
-                      },
-                    );
-              }),
-            ),
-          ],
+                eventLoader: _getEvents,
+
+                calendarStyle: const CalendarStyle(
+                  markerDecoration:  BoxDecoration(
+                    color: Colors.black,
+                    shape: BoxShape.rectangle,
+                  ),
+                ),
+
+              ),
+              const SizedBox(height: 20,),
+              Expanded(
+                child: ValueListenableBuilder<List<Event>>(
+                    valueListenable: _selectedEvents,
+                    builder: (context, value, _) {
+                      if (value.isNotEmpty) { // 일기 내용이 있다면
+                        return ListView.builder(
+                          itemCount: value.length,
+                          itemBuilder: (context, index) {
+                            return ListTile(
+                                title: Text('${value[index]}')
+                            );
+                          },
+                        );
+                      }
+                      else { // 일기 쓴 내역이 없다면
+                        return const IconTextboxWithDottedBorder(
+                          icon: Icons.add_photo_alternate_outlined,
+                          label: "아직 일기를 작성하지 않았어요.",
+                        );
+                      }
+                }),
+              ),
+            ],
+          ),
         ),
     );
   }
