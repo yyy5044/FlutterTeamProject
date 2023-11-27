@@ -12,6 +12,7 @@ class EmotionCategoryView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: EmotionDiaryColors.white0,
+
       appBar: AppBar(
         title: Text(
           "감정 어휘",
@@ -57,19 +58,32 @@ class EmotionCategoryTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-        onPressed: (){},
+    return Container(
+      decoration: BoxDecoration(
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              spreadRadius: 0.1,
+              blurRadius: 5,
+              offset: const Offset(0, 0)
+          )
+        ]
+      ),
+      child: ElevatedButton(
+        onPressed: (){
+          //
+        },
         style: ElevatedButton.styleFrom(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          backgroundColor: EmotionDiaryColors.white0,
-          foregroundColor: EmotionDiaryColors.black0,
-          textStyle: ThemeManager.themeData.textTheme.headlineSmall
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            backgroundColor: EmotionDiaryColors.white0,
+            foregroundColor: EmotionDiaryColors.black0,
+            textStyle: ThemeManager.themeData.textTheme.headlineSmall,
+            elevation: 0
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Image(
               image: AssetImage(emotion.category!.imagePath()),
@@ -79,9 +93,56 @@ class EmotionCategoryTile extends StatelessWidget {
 
             const SizedBox(height: 8,),
 
-            Text(emotion.category!.korean)
+            Text(
+              emotion.category!.korean,
+              style: ThemeManager.themeData.textTheme.headlineSmall,
+            )
           ],
-        )
+        ),
+      ),
     );
+    // return Container(
+    //   decoration: BoxDecoration(
+    //     boxShadow: [
+    //       BoxShadow(
+    //           color: Colors.black.withOpacity(0.1),
+    //           spreadRadius: 0.1,
+    //           blurRadius: 5,
+    //           offset: const Offset(0, 0)
+    //       )
+    //     ]
+    //   ),
+    //   child: ElevatedButton(
+    //       onPressed: (){
+    //
+    //       },
+    //       style: ElevatedButton.styleFrom(
+    //         shape: RoundedRectangleBorder(
+    //           borderRadius: BorderRadius.circular(10),
+    //         ),
+    //         backgroundColor: EmotionDiaryColors.white0,
+    //         foregroundColor: EmotionDiaryColors.black0,
+    //         textStyle: ThemeManager.themeData.textTheme.headlineSmall
+    //       ),
+    //       child: Column(
+    //         mainAxisAlignment: MainAxisAlignment.center,
+    //         crossAxisAlignment: CrossAxisAlignment.center,
+    //         children: [
+    //           Image(
+    //             image: AssetImage(emotion.category!.imagePath()),
+    //             width: 44,
+    //             height: 44,
+    //           ),
+    //
+    //           const SizedBox(height: 8,),
+    //
+    //           Text(
+    //             emotion.category!.korean,
+    //             style: ThemeManager.themeData.textTheme.headlineSmall,
+    //           )
+    //         ],
+    //       )
+    //   ),
+    // );
   }
 }
