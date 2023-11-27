@@ -45,6 +45,6 @@ extension EmotionCategoryList on EmotionCategoryModel {
 class EmotionModel {
   EmotionModel({required this.word, required this.definition});
 
-  String? word;
-  String? definition;
+  String word;
+  String definition;
 }
