@@ -28,22 +28,20 @@ class EmotionCategoryView extends StatelessWidget {
 
       body: SafeArea(
         minimum: const EdgeInsets.all(24),
-        child: Container(
-          child: GridView.builder(
-            shrinkWrap: true,
-            itemCount: EmotionCategory.values.length,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              childAspectRatio: 188 / 116,
-              mainAxisSpacing: 24,
-              crossAxisSpacing: 24
-            ),
-            itemBuilder: (context, index) {
-              return EmotionCategoryTile(
-                  emotion: EmotionCategoryList.categories[index],
-              );
-            }
-          )
+        child: GridView.builder(
+          shrinkWrap: true,
+          itemCount: EmotionCategory.values.length,
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            childAspectRatio: 188 / 116,
+            mainAxisSpacing: 24,
+            crossAxisSpacing: 24
+          ),
+          itemBuilder: (context, index) {
+            return EmotionCategoryTile(
+                emotion: EmotionCategoryList.categories[index],
+            );
+          }
         ),
       ),
     );
