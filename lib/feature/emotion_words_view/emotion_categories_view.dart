@@ -1,3 +1,4 @@
+import 'package:emotion_diary/feature/emotion_words_view/emotion_word_view.dart';
 import 'package:flutter/material.dart';
 
 import 'package:emotion_diary/common/utils/colors.dart';

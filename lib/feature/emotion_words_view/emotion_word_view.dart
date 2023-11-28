@@ -1,3 +1,4 @@
+import 'package:emotion_diary/feature/emotion_words_view/emotion_word_detail_view.dart';
 import 'package:flutter/material.dart';
 
 import 'package:emotion_diary/common/utils/colors.dart';
@@ -81,7 +82,10 @@ class EmotionListTile extends StatelessWidget {
       ),
       child: ElevatedButton(
         onPressed: (){
-          //
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => EmotionWordDetailView(emotion: emotion))
+          );
         },
         style: ElevatedButton.styleFrom(
           shape: RoundedRectangleBorder(
