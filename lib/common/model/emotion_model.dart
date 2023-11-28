@@ -33,11 +33,11 @@ class EmotionCategoryModel {
 
 extension EmotionCategoryList on EmotionCategoryModel {
   static List<EmotionCategoryModel> categories = [
-    EmotionCategoryModel(category: EmotionCategory.bigSmile, words: []),
     EmotionCategoryModel(category: EmotionCategory.smile, words: []),
+    EmotionCategoryModel(category: EmotionCategory.sad, words: []),
     EmotionCategoryModel(category: EmotionCategory.angry, words: []),
     EmotionCategoryModel(category: EmotionCategory.surprised, words: []),
-    EmotionCategoryModel(category: EmotionCategory.sad, words: []),
+    EmotionCategoryModel(category: EmotionCategory.bigSmile, words: []),
   ];
 }
 

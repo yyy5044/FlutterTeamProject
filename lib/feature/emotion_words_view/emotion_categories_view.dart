@@ -72,7 +72,10 @@ class EmotionCategoryTile extends StatelessWidget {
       ),
       child: ElevatedButton(
         onPressed: (){
-          //
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => EmotionWordsView(category: emotion,))
+          );
         },
         style: ElevatedButton.styleFrom(
             shape: RoundedRectangleBorder(

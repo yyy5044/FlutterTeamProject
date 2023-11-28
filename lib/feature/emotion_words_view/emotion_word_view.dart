@@ -6,15 +6,10 @@ import 'package:emotion_diary/common/utils/theme_manager.dart';
 
 import 'package:emotion_diary/common/model/emotion_model.dart';
 
-class EmotionWordsView extends StatefulWidget {
-  const EmotionWordsView({super.key});
+class EmotionWordsView extends StatelessWidget {
+  EmotionWordsView({super.key, required this.category});
 
-  @override
-  State<EmotionWordsView> createState() => _EmotionWordsViewState();
-}
-
-class _EmotionWordsViewState extends State<EmotionWordsView> {
-
+  EmotionCategoryModel category;
   List<EmotionModel> emotionList = [
     EmotionModel(word: "test", definition: "afewfawfaewf"),
     EmotionModel(word: "test", definition: "afewfawfaewf"),
@@ -29,17 +24,30 @@ class _EmotionWordsViewState extends State<EmotionWordsView> {
       backgroundColor: EmotionDiaryColors.white0,
 
       appBar: AppBar(
-        title: Text(
-          '일기 작성',
-          style: Theme.of(context).textTheme.titleSmall,
-        ),
-        leading: IconButton(
-          icon: const Icon(Icons.list),
-          onPressed: () {},
-        ),
         backgroundColor: Colors.white,
         elevation: 1,
         shadowColor: Colors.black,
+
+        title: Text(
+          category!.category!.korean,
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
+
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+
+        actions: [
+          IconButton(
+            onPressed: (){
+
+            },
+            icon: const Icon(Icons.add,),
+          )
+        ],
       ),
 
       body: SafeArea(
@@ -60,7 +68,6 @@ class _EmotionWordsViewState extends State<EmotionWordsView> {
     );
   }
 }
-
 
 class EmotionListTile extends StatelessWidget {
   const EmotionListTile({super.key, required this.emotion});

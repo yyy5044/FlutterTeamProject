@@ -1,8 +1,8 @@
+import 'package:flutter/material.dart';
+
 import 'package:emotion_diary/common/model/emotion_model.dart';
 import 'package:emotion_diary/common/utils/colors.dart';
 import 'package:emotion_diary/common/utils/theme_manager.dart';
-import 'package:flutter/material.dart';
-
 
 class EmotionWordDetailView extends StatelessWidget {
   const EmotionWordDetailView({super.key, required this.emotion});
@@ -15,6 +15,10 @@ class EmotionWordDetailView extends StatelessWidget {
       backgroundColor: EmotionDiaryColors.white0,
 
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 1,
+        shadowColor: Colors.black,
+
         title: Text(
           '감정 어휘',
           style: Theme.of(context).textTheme.titleSmall,
@@ -25,9 +29,15 @@ class EmotionWordDetailView extends StatelessWidget {
             Navigator.pop(context);
           },
         ),
-        backgroundColor: Colors.white,
-        elevation: 1,
-        shadowColor: Colors.black,
+
+        actions: [
+          IconButton(
+            onPressed: (){
+
+            },
+            icon: const Icon(Icons.edit,),
+          )
+        ],
       ),
 
       body: SafeArea(
