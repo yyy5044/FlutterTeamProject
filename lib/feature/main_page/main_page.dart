@@ -37,6 +37,7 @@ class _MainPageState extends State<MainPage> {
           child: Column(
             children: [
               TableCalendar(
+                locale: 'ko_KR',
                 focusedDay: today,
                 firstDay: DateTime.utc(2023, 1, 1),
                 lastDay: DateTime.now(),
@@ -94,7 +95,7 @@ class _MainPageState extends State<MainPage> {
                 calendarStyle: const CalendarStyle(
                   markerDecoration:  BoxDecoration(
                     color: Colors.black,
-                    shape: BoxShape.rectangle,
+                    shape: BoxShape.circle,
                   ),
                 ),
 
