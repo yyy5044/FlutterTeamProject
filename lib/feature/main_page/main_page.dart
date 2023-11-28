@@ -1,4 +1,5 @@
 import 'package:emotion_diary/common/widgets/icon_textbox_with_dotted_border.dart';
+import 'package:emotion_diary/common/widgets/black_button.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -109,8 +110,8 @@ class _MainPageState extends State<MainPage> {
                         return ListView.builder(
                           itemCount: value.length,
                           itemBuilder: (context, index) {
-                            return ListTile(
-                                title: Text('${value[index]}')
+                            return ListTile( //이 부분에 일기내용 추가
+                                title: Image.asset('assets/weather/weather=cloudy.png', width: 400, height: 400),
                             );
                           },
                         );
@@ -145,6 +146,7 @@ class _MainPageState extends State<MainPage> {
 class Event {
   Event(this.title);
   final String title;
+  // 이미지는 String imagepath 로 추가
 
   @override
   String toString() {
