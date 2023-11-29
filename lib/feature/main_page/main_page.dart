@@ -87,6 +87,25 @@ class _MainPageState extends State<MainPage> {
                         );
                     }
                   },
+                  markerBuilder: (context, day, events) { //이모티콘 추가
+                    if (events.isNotEmpty) {
+                      return ListView.builder(
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        itemCount: events.length,
+                        itemBuilder: (context, index) {
+                          return Container(
+                            margin: EdgeInsets.only(top: 40),
+                            child: Icon(
+                              size: 20,
+                              Icons.pets_outlined,
+                            ),
+                          );
+
+                        },
+                      );
+                    }
+                  },
                 ),
                 onDaySelected: _onDaySelected,
                 selectedDayPredicate: (day) => isSameDay(day, today),
