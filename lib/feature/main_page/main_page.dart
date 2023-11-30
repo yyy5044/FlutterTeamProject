@@ -136,9 +136,14 @@ class _MainPageState extends State<MainPage> {
                         );
                       }
                       else { // 일기 쓴 내역이 없다면
-                        return const IconTextboxWithDottedBorder(
-                          icon: Icons.add_photo_alternate_outlined,
-                          label: "아직 일기를 작성하지 않았어요.",
+                        return GestureDetector(
+                          onTap: () {
+                            print('Tapped');
+                          },
+                          child: const IconTextboxWithDottedBorder(
+                            icon: Icons.add_photo_alternate_outlined,
+                            label: "아직 일기를 작성하지 않았어요.",
+                          ),
                         );
                       }
                 }),
