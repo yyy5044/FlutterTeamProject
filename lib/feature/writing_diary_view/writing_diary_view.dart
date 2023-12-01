@@ -12,6 +12,10 @@ import 'package:image_picker/image_picker.dart';
 
 import '../main_page/main_page.dart';
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+
 class WritingDiaryView extends StatefulWidget {
   const WritingDiaryView({super.key});
 
@@ -442,13 +446,52 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
     }
   }
 
+  // 사용자에게 띄울 메세지 함수
+  void _showDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('알림'),
+        content: Text(message),
+        actions: <Widget>[
+          TextButton(
+            child: Text('확인'),
+            onPressed: () {
+              Navigator.of(ctx).pop(); // 다이얼로그 닫기
+            },
+          ),
+        ],
+      ),
+    );
+  }
+  
   // TODO: 데이터 저장 구현하기
-  void _saveDiary() {
-    // DateTime _selectedDate   -> 날짜 DateTime
-    // int _selectedEmoji       -> 이모지 index
-    // int _selectedWeather     -> 날짜 index
-    // String _selectedEmotions -> 감정 String
-    // XFile? _pickedFile       -> 사진 XFile
-    // String diary             -> 일기 String
+  void _saveDiary() async {
+    User? currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) {
+      // 로그인하지 않은 사용자 처리
+      _showDialog('로그인을 하셔야 합니다.');
+      return;
+    }
+
+    final diaryData = {
+      'userId': currentUser.uid, // 로그인한 사용자의 ID
+      'date': _selectedDate, // 날짜
+      'emojiIndex': _selectedEmoji, // 이모지 index
+      'weatherIndex': _selectedWeather, // 날씨 index
+      'emotions': _selectedEmotion, // 감정 String
+      'diaryText': diary, // 일기 String
+      // 'image': _pickedFile, // 사진 (옵션: 사진 처리 필요)
+    };
+
+    try {
+      await FirebaseFirestore.instance
+          .collection('diaries')
+          .add(diaryData);
+      _showDialog('작성되었습니다.'); // 성공 메시지
+    } catch (error) {
+      _showDialog('죄송합니다. 다시 시도해주세요.'); // 실패 메시지
+    }
+
   }
 }
