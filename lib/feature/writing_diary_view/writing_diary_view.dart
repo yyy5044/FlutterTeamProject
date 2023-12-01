@@ -186,7 +186,7 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
                               _getPhotoLibraryImage();
                             },
                             child: const IconTextboxWithDottedBorder(
-                              icon: Icons.add_photo_alternate_outlined,
+                              icon: Icons.add_box_outlined,
                               label: "사진 추가하기",
                             )),
                         child: Image(

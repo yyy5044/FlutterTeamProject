@@ -1,3 +1,5 @@
+import 'package:emotion_diary/common/widgets/icon_textbox_with_dotted_border.dart';
+import 'package:emotion_diary/common/widgets/black_button.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -18,12 +20,25 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Calendar with Emojis'),
+      appBar: AppBar(
+        title: Text(
+          '일기 작성',
+          style: Theme.of(context).textTheme.titleSmall,
         ),
-        body: Column(
+        leading: IconButton(
+          icon: const Icon(Icons.list),
+          onPressed: () {},
+        ),
+        backgroundColor: Colors.white,
+        elevation: 1,
+        shadowColor: Colors.black,
+      ),
+      body: SafeArea(
+        minimum: const EdgeInsets.all(24),
+        child: Column(
           children: [
             TableCalendar(
+              locale: 'ko_KR',
               focusedDay: today,
               firstDay: DateTime.utc(2023, 1, 1),
               lastDay: DateTime.now(),
@@ -72,27 +87,70 @@ class _MainPageState extends State<MainPage> {
                       );
                   }
                 },
+                markerBuilder: (context, day, events) { //이모티콘 추가
+                  if (events.isNotEmpty) {
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      scrollDirection: Axis.horizontal,
+                      itemCount: events.length,
+                      itemBuilder: (context, index) {
+                        return Container(
+                          margin: EdgeInsets.only(top: 40),
+                          child: Icon(
+                            size: 20,
+                            Icons.pets_outlined,
+                          ),
+                        );
+
+                      },
+                    );
+                  }
+                },
               ),
               onDaySelected: _onDaySelected,
               selectedDayPredicate: (day) => isSameDay(day, today),
 
               eventLoader: _getEvents,
+
+              calendarStyle: const CalendarStyle(
+                markerDecoration:  BoxDecoration(
+                  color: Colors.black,
+                  shape: BoxShape.circle,
+                ),
+              ),
+
             ),
             const SizedBox(height: 20,),
             Expanded(
               child: ValueListenableBuilder<List<Event>>(
                   valueListenable: _selectedEvents,
                   builder: (context, value, _) {
-                    return ListView.builder(
-                      itemCount: value.length,
-                      itemBuilder: (context, index) {
-                        return ListTile(title: Text('${value[index]}'));
-                      },
-                    );
-              }),
+                    if (value.isNotEmpty) { // 일기 내용이 있다면
+                      return ListView.builder(
+                        itemCount: value.length,
+                        itemBuilder: (context, index) {
+                          return ListTile( //이 부분에 일기내용 추가
+                            title: Image.asset('assets/weather/weather=cloudy.png', width: 400, height: 400),
+                          );
+                        },
+                      );
+                    }
+                    else { // 일기 쓴 내역이 없다면
+                      return GestureDetector(
+                        onTap: () {
+                          print('Tapped');
+                        },
+                        child: const IconTextboxWithDottedBorder(
+                          icon: Icons.add_photo_alternate_outlined,
+                          label: "아직 일기를 작성하지 않았어요.",
+                        ),
+                      );
+                    }
+                  }),
             ),
           ],
         ),
+      ),
     );
   }
 
@@ -100,16 +158,22 @@ class _MainPageState extends State<MainPage> {
     setState(() {
       today = day;
       _selectedEvents.value = _getEvents(today);
-      events.addAll({today: [Event('1')]});
     });
   }
 
   List<Event> _getEvents(DateTime today) {
-    return events[today] ?? [];
+    DateTime dateWithoutTime = DateTime(today.year, today.month, today.day);
+    return events[dateWithoutTime] ?? [];
   }
 }
 
 class Event {
   Event(this.title);
   final String title;
+  // 이미지는 String imagepath 로 추가
+
+  @override
+  String toString() {
+    return title;
+  }
 }
