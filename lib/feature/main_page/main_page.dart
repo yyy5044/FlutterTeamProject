@@ -255,16 +255,18 @@ class _MainPageState extends State<MainPage> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
+                                      // TODO: 일단은 텍스트로 표시해뒀는데 각 함수를 구현하고 비활성화라고 적힌 부분을 풀면 됨.
+
                                       // 이모티콘을 표시
-                                      // Icon(getEmoji(event.emoji)),
+                                      // Icon(getEmoji(event.emoji)), // 일단 비활성화
                                       Text('Emoji: ${event.emoji}'), // 일단은 텍스트로
                                       SizedBox(width: 10), // 아이콘 간 간격
                                       // 감정 어휘 표시
-                                      // Text('Emotion: ${getEmotion(event.emotion)}'),
+                                      // Text('Emotion: ${getEmotion(event.emotion)}'), // 일단 비활성화
                                       Text('Emotion: ${event.emotion}'), // 일단은 텍스트로
                                       SizedBox(width: 10),
                                       // 날씨 정보를 표시
-                                      // Icon(getWeather(event.weather)),
+                                      // Icon(getWeather(event.weather)), // 일단 비활성화
                                       Text('Weather: ${event.weather}'), // 일단은 텍스트로
                                     ],
                                   ),
@@ -300,15 +302,15 @@ class _MainPageState extends State<MainPage> {
   }
 
   void getEmoji(int index){
-
+    // TODO: Event객체에 있는 emoji 멤버는 현재 int형인데, 숫자를 받으면 해당하는 이모티콘으로 변환시켜주는 함수를 작성해야 한다.
   }
 
   void getEmotion(int index){
-
+    // TODO: getEmoji와 비슷하게 emotion 값을 받으면 해당하는 감정 어휘로 변환시켜주는 함수를 작성해야 한다.
   }
 
   void getWeather(int index){
-
+    // TODO: weather 값을 받으면 해당하는 날씨 이모티콘으로 변환시켜주는 함수를 작성해야 한다.
   }
 
   void _onDaySelected(DateTime day, DateTime focusedDay) {
