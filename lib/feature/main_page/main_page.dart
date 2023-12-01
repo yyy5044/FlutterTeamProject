@@ -122,13 +122,10 @@ class _MainPageState extends State<MainPage> {
           padding: EdgeInsets.zero,
           children: [
             const DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.black54,
-              ),
               child: Text(
                 '메뉴',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: Colors.black,
                   fontSize: 24,
                 ),
               ),
