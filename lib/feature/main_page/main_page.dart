@@ -19,7 +19,7 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Calendar with Emojis'),
+          title: const Text('Calendar with Emojis'),
         ),
         body: Column(
           children: [
@@ -40,31 +40,31 @@ class _MainPageState extends State<MainPage> {
                 dowBuilder: (context, day) {
                   switch (day.weekday) {
                     case 1:
-                      return Center(
+                      return const Center(
                         child: Text('월'),
                       );
                     case 2:
-                      return Center(
+                      return const Center(
                         child: Text('화'),
                       );
                     case 3:
-                      return Center(
+                      return const Center(
                         child: Text('수'),
                       );
                     case 4:
-                      return Center(
+                      return const Center(
                         child: Text('목'),
                       );
                     case 5:
-                      return Center(
+                      return const Center(
                         child: Text('금'),
                       );
                     case 6:
-                      return Center(
+                      return const Center(
                         child: Text('토'),
                       );
                     case 7:
-                      return Center(
+                      return const Center(
                         child: Text(
                           '일',
                           style: TextStyle(color: Colors.red),
@@ -78,7 +78,7 @@ class _MainPageState extends State<MainPage> {
 
               eventLoader: _getEvents,
             ),
-            SizedBox(height: 20,),
+            const SizedBox(height: 20,),
             Expanded(
               child: ValueListenableBuilder<List<Event>>(
                   valueListenable: _selectedEvents,
