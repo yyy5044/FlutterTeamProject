@@ -49,13 +49,19 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
 
   @override
   Widget build(BuildContext context) {
-    bool showSaveButton = MediaQuery.of(context).viewInsets.bottom == 0;
+    bool showSaveButton = MediaQuery
+        .of(context)
+        .viewInsets
+        .bottom == 0;
 
     return Scaffold(
       appBar: AppBar(
         title: Text(
           '일기 작성',
-          style: Theme.of(context).textTheme.titleSmall,
+          style: Theme
+              .of(context)
+              .textTheme
+              .titleSmall,
         ),
         backgroundColor: Colors.white,
         elevation: 1,
@@ -115,15 +121,18 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
                                   children: [
                                     Text(
                                       '${_selectedDate.year}년',
-                                      style: Theme.of(context)
+                                      style: Theme
+                                          .of(context)
                                           .textTheme
                                           .headlineSmall,
                                     ),
                                     Row(
                                       children: [
                                         Text(
-                                          "${_selectedDate.month}월 ${_selectedDate.day}일",
-                                          style: Theme.of(context)
+                                          "${_selectedDate
+                                              .month}월 ${_selectedDate.day}일",
+                                          style: Theme
+                                              .of(context)
                                               .textTheme
                                               .titleLarge,
                                         ),
@@ -166,17 +175,21 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
                           children: [
                             Text(
                               "오늘 나의 감정은",
-                              style: Theme.of(context).textTheme.titleSmall,
+                              style: Theme
+                                  .of(context)
+                                  .textTheme
+                                  .titleSmall,
                             ),
                             Padding(
                                 padding:
-                                    const EdgeInsets.symmetric(horizontal: 4.0),
+                                const EdgeInsets.symmetric(horizontal: 4.0),
                                 child: GestureDetector(
                                   child: Row(
                                     children: [
                                       Text(
                                         sampleEmotionList[_selectedEmotion],
-                                        style: Theme.of(context)
+                                        style: Theme
+                                            .of(context)
                                             .textTheme
                                             .titleSmall,
                                       ),
@@ -191,7 +204,10 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
                                 )),
                             Text(
                               "이야",
-                              style: Theme.of(context).textTheme.titleSmall,
+                              style: Theme
+                                  .of(context)
+                                  .textTheme
+                                  .titleSmall,
                             ),
                           ],
                         ),
@@ -258,46 +274,48 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
       builder: (context) {
         return StatefulBuilder(
             builder: (BuildContext context, StateSetter bottomState) {
-          return Container(
-            clipBehavior: Clip.hardEdge,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(25.0),
-              color: EmotionDiaryColors.white0,
-            ),
-            height: 450,
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 20.0,
-                  horizontal: 16.0,
+              return Container(
+                clipBehavior: Clip.hardEdge,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(25.0),
+                  color: EmotionDiaryColors.white0,
                 ),
+                height: 450,
                 child: Center(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List<Widget>.generate(
-                        sampleEmotionList.length,
-                        (index) => Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 4.0),
-                          child: EmotionListButton(
-                            onPressed: () {
-                              bottomState(() {
-                                setState(() {
-                                  _selectedEmotion = index;
-                                });
-                              });
-                            },
-                            label: sampleEmotionList[index],
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 20.0,
+                      horizontal: 16.0,
+                    ),
+                    child: Center(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: List<Widget>.generate(
+                            sampleEmotionList.length,
+                                (index) =>
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 4.0),
+                                  child: EmotionListButton(
+                                    onPressed: () {
+                                      bottomState(() {
+                                        setState(() {
+                                          _selectedEmotion = index;
+                                        });
+                                      });
+                                    },
+                                    label: sampleEmotionList[index],
+                                  ),
+                                ),
                           ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ),
-          );
-        });
+              );
+            });
       },
     );
   }
@@ -330,45 +348,49 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
         builder: (context) {
           return StatefulBuilder(
               builder: (BuildContext context, StateSetter bottomState) {
-            return SizedBox(
-              height: 200,
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                  ),
-                  child: Row(
-                    children: List<Widget>.generate(
-                      5,
-                      (index) => Padding(
-                        key: UniqueKey(),
-                        padding: const EdgeInsets.all(6.0),
-                        child: GestureDetector(
-                          onTap: () {
-                            bottomState(() {
-                              setState(() {
-                                _selectedEmoji = index;
-                              });
-                            });
-                          },
-                          child: AnimatedSize(
-                            duration: const Duration(milliseconds: 500),
-                            child: Image(
-                              image: AssetImage(Emojis.emojiList[index]),
-                              width: 60 * (index == _selectedEmoji ? 1.5 : 1.0),
-                              height:
-                                  60 * (index == _selectedEmoji ? 1.5 : 1.0),
-                            ),
-                          ),
+                return SizedBox(
+                  height: 200,
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                      ),
+                      child: Row(
+                        children: List<Widget>.generate(
+                          5,
+                              (index) =>
+                              Padding(
+                                key: UniqueKey(),
+                                padding: const EdgeInsets.all(6.0),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    bottomState(() {
+                                      setState(() {
+                                        _selectedEmoji = index;
+                                      });
+                                    });
+                                  },
+                                  child: AnimatedSize(
+                                    duration: const Duration(milliseconds: 500),
+                                    child: Image(
+                                      image: AssetImage(
+                                          Emojis.emojiList[index]),
+                                      width: 60 *
+                                          (index == _selectedEmoji ? 1.5 : 1.0),
+                                      height:
+                                      60 *
+                                          (index == _selectedEmoji ? 1.5 : 1.0),
+                                    ),
+                                  ),
+                                ),
+                              ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ),
-            );
-          });
+                );
+              });
         });
   }
 
@@ -378,65 +400,68 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
         builder: (context) {
           return StatefulBuilder(
               builder: (BuildContext context, StateSetter bottomState) {
-            return SizedBox(
-              height: 200,
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                  ),
-                  child: Row(
-                    children: List<Widget>.generate(
-                      5,
-                      (index) => Padding(
-                        key: UniqueKey(),
-                        padding: const EdgeInsets.all(6.0),
-                        child: GestureDetector(
-                          onTap: () {
-                            bottomState(() {
-                              setState(() {
-                                _selectedWeather = index;
-                              });
-                            });
-                          },
-                          child: SizedBox(
-                            width: 60,
-                            height: 60,
-                            child: Stack(
-                              children: [
-                                Container(
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: index == _selectedWeather
-                                        ? Weathers.weatherColorList[index]
-                                        : Colors.transparent,
+                return SizedBox(
+                  height: 200,
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                      ),
+                      child: Row(
+                        children: List<Widget>.generate(
+                          5,
+                              (index) =>
+                              Padding(
+                                key: UniqueKey(),
+                                padding: const EdgeInsets.all(6.0),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    bottomState(() {
+                                      setState(() {
+                                        _selectedWeather = index;
+                                      });
+                                    });
+                                  },
+                                  child: SizedBox(
+                                    width: 60,
+                                    height: 60,
+                                    child: Stack(
+                                      children: [
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: index == _selectedWeather
+                                                ? Weathers
+                                                .weatherColorList[index]
+                                                : Colors.transparent,
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.all(4.0),
+                                          child: Image(
+                                            image:
+                                            AssetImage(
+                                                Weathers.weatherList[index]),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.all(4.0),
-                                  child: Image(
-                                    image:
-                                        AssetImage(Weathers.weatherList[index]),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
+                              ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ),
-            );
-          });
+                );
+              });
         });
   }
 
   void _getPhotoLibraryImage() async {
     final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
+    await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       setState(() {
         _pickedFile = pickedFile;
@@ -450,48 +475,48 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
   void _showDialog(String message) {
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text('알림'),
-        content: Text(message),
-        actions: <Widget>[
-          TextButton(
-            child: Text('확인'),
-            onPressed: () {
-              Navigator.of(ctx).pop(); // 다이얼로그 닫기
-            },
+      builder: (ctx) =>
+          AlertDialog(
+            title: Text('알림'),
+            content: Text(message),
+            actions: <Widget>[
+              TextButton(
+                child: Text('확인'),
+                onPressed: () {
+                  Navigator.of(ctx).pop(); // 다이얼로그 닫기
+                },
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
-  
+
   // TODO: 데이터 저장 구현하기
   void _saveDiary() async {
     User? currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser == null) {
-      // 로그인하지 않은 사용자 처리
       _showDialog('로그인을 하셔야 합니다.');
       return;
     }
 
+    // 사용자가 입력한 일기 내용을 diary 변수에 저장
+    diary = _diaryFieldController.text;
+
     final diaryData = {
-      'userId': currentUser.uid, // 로그인한 사용자의 ID
-      'date': _selectedDate, // 날짜
-      'emojiIndex': _selectedEmoji, // 이모지 index
-      'weatherIndex': _selectedWeather, // 날씨 index
-      'emotions': _selectedEmotion, // 감정 String
-      'diaryText': diary, // 일기 String
-      // 'image': _pickedFile, // 사진 (옵션: 사진 처리 필요)
+      'userId': currentUser.uid,
+      'date': _selectedDate,
+      'emojiIndex': _selectedEmoji,
+      'weatherIndex': _selectedWeather,
+      'emotions': _selectedEmotion,
+      'diaryText': diary, // 여기에 사용자가 입력한 일기 내용을 포함
+      // 'image': _pickedFile, // 사진 처리 필요
     };
 
     try {
-      await FirebaseFirestore.instance
-          .collection('diaries')
-          .add(diaryData);
-      _showDialog('작성되었습니다.'); // 성공 메시지
+      await FirebaseFirestore.instance.collection('diaries').add(diaryData);
+      _showDialog('작성되었습니다.');
     } catch (error) {
-      _showDialog('죄송합니다. 다시 시도해주세요.'); // 실패 메시지
+      _showDialog('죄송합니다. 다시 시도해주세요.');
     }
-
   }
 }
