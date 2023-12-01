@@ -26,19 +26,37 @@ class _MainPageState extends State<MainPage> {
   // Firestore에서 데이터를 가져오는 함수
   Future<void> loadEventsFromFirestore() async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
-    QuerySnapshot querySnapshot = await firestore.collection('diaries').get();
+
+    // 현재 로그인된 유저의 ID를 확인
+    String currentUserId = currentUser?.uid ?? '';
+
+    // 현재 유저의 ID와 일치하는 일기만 쿼리
+    QuerySnapshot querySnapshot = await firestore
+        .collection('diaries')
+        .where('userId', isEqualTo: currentUserId)
+        .get();
 
     Map<DateTime, List<Event>> newEvents = {};
 
     for (var doc in querySnapshot.docs) {
       var data = doc.data() as Map<String, dynamic>;
       DateTime date = (data['date'] as Timestamp).toDate();
-      String title = data['diaryText'];
+      String diaryText = data['diaryText'];
       String? imagePath = data['image'];
+      int emoji = data['emojiIndex'];
+      int emotion = data['emotions'];
+      int weather = data['weatherIndex'];
 
-      // Firestore의 날짜를 기준으로 Event 객체를 생성하고 events 맵에 추가
+      // 받아온 일기 데이터들로 일기 객체 생성
+      Event event = Event(
+        diaryText: diaryText,
+        imagePath: imagePath,
+        emoji: emoji,
+        emotion: emotion,
+        weather: weather,
+      );
+
       DateTime dateWithoutTime = DateTime(date.year, date.month, date.day);
-      var event = Event(title, imagePath: imagePath);
 
       if (newEvents[dateWithoutTime] != null) {
         newEvents[dateWithoutTime]!.add(event);
@@ -234,8 +252,27 @@ class _MainPageState extends State<MainPage> {
                                     : Container(height: 200, color: Colors.grey), // 이미지가 없을 경우 대체 요소
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      // 이모티콘을 표시
+                                      // Icon(getEmoji(event.emoji)),
+                                      Text('Emoji: ${event.emoji}'), // 일단은 텍스트로
+                                      SizedBox(width: 10), // 아이콘 간 간격
+                                      // 감정 어휘 표시
+                                      // Text('Emotion: ${getEmotion(event.emotion)}'),
+                                      Text('Emotion: ${event.emotion}'), // 일단은 텍스트로
+                                      SizedBox(width: 10),
+                                      // 날씨 정보를 표시
+                                      // Icon(getWeather(event.weather)),
+                                      Text('Weather: ${event.weather}'), // 일단은 텍스트로
+                                    ],
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
                                   child: SingleChildScrollView( // 내용이 길 경우 스크롤 가능
-                                    child: Text(event.title),
+                                    child: Text(event.diaryText),
                                   ),
                                 ),
                               ],
@@ -262,6 +299,18 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
+  void getEmoji(int index){
+
+  }
+
+  void getEmotion(int index){
+
+  }
+
+  void getWeather(int index){
+
+  }
+
   void _onDaySelected(DateTime day, DateTime focusedDay) {
     setState(() {
       today = day;
@@ -278,12 +327,23 @@ class _MainPageState extends State<MainPage> {
 
 // Event 클래스에 이미지 경로를 추가
 class Event {
-  Event(this.title, {this.imagePath});
-  final String title;
+  final String diaryText;
   final String? imagePath;
+  final int emoji;
+  final int emotion;
+  final int weather;
+
+  Event({
+    required this.diaryText,
+    this.imagePath,
+    required this.emoji,
+    required this.emotion,
+    required this.weather,
+  });
+
 
   @override
   String toString() {
-    return title;
+    return 'Event(title: $diaryText, imagePath: $imagePath, emoji: $emoji, emotion: $emotion, weather: $weather)';
   }
 }
