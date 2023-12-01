@@ -222,13 +222,28 @@ class _MainPageState extends State<MainPage> {
                       return ListView.builder(
                         itemCount: value.length,
                         itemBuilder: (context, index) {
-                          return ListTile( //이 부분에 일기내용 추가
-                            title: Image.asset('assets/weather/weather=cloudy.png', width: 400, height: 400),
+                          Event event = value[index];
+                          return Card( // Material 디자인의 카드 스타일을 적용
+                            child: Column(
+                              children: <Widget>[
+                                event.imagePath != null
+                                    ? Padding(
+                                      padding: const EdgeInsets.all(30.0),
+                                      child: Image.network(event.imagePath!, width: double.infinity),
+                                    ) // 이미지를 상단에 표시
+                                    : Container(height: 200, color: Colors.grey), // 이미지가 없을 경우 대체 요소
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: SingleChildScrollView( // 내용이 길 경우 스크롤 가능
+                                    child: Text(event.title),
+                                  ),
+                                ),
+                              ],
+                            ),
                           );
                         },
                       );
-                    }
-                    else { // 일기 쓴 내역이 없다면
+                    } else { // 일기 쓴 내역이 없다면
                       return GestureDetector(
                         onTap: () {
                           print('Tapped');
