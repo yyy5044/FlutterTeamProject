@@ -10,6 +10,8 @@ import 'package:emotion_diary/common/widgets/textform_with_border.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../main_page/main_page.dart';
+
 class WritingDiaryView extends StatefulWidget {
   const WritingDiaryView({super.key});
 
@@ -51,13 +53,39 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
           '일기 작성',
           style: Theme.of(context).textTheme.titleSmall,
         ),
-        leading: IconButton(
-          icon: const Icon(Icons.list),
-          onPressed: () {},
-        ),
         backgroundColor: Colors.white,
         elevation: 1,
         shadowColor: Colors.black,
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Text(
+                '메뉴',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                ),
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.book),
+              title: const Text('메인 페이지'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MainPage()),
+                );
+              },
+            ),
+            // 여기에 필요한 다른 메뉴 항목들 추가 가능
+          ],
+        ),
       ),
       body: SafeArea(
         minimum: const EdgeInsets.all(24),

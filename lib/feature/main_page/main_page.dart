@@ -2,6 +2,7 @@ import 'package:emotion_diary/common/widgets/icon_textbox_with_dotted_border.dar
 import 'package:emotion_diary/common/widgets/black_button.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
+import '../writing_diary_view/writing_diary_view.dart';
 
 class MainPage extends StatefulWidget {
   @override
@@ -25,13 +26,39 @@ class _MainPageState extends State<MainPage> {
           '일기 작성',
           style: Theme.of(context).textTheme.titleSmall,
         ),
-        leading: IconButton(
-          icon: const Icon(Icons.list),
-          onPressed: () {},
-        ),
         backgroundColor: Colors.white,
         elevation: 1,
         shadowColor: Colors.black,
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Text(
+                '메뉴',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                ),
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.book),
+              title: const Text('일기 작성하기'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => WritingDiaryView()),
+                );
+              },
+            ),
+            // 여기에 필요한 다른 메뉴 항목들 추가 가능
+          ],
+        ),
       ),
       body: SafeArea(
         minimum: const EdgeInsets.all(24),
