@@ -68,36 +68,6 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
         elevation: 1,
         shadowColor: Colors.black,
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.black54,
-              ),
-              child: Text(
-                '메뉴',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                ),
-              ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.book),
-              title: const Text('메인 페이지'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => MainPage()),
-                );
-              },
-            ),
-            // 여기에 필요한 다른 메뉴 항목들 추가 가능
-          ],
-        ),
-      ),
       body: SafeArea(
         minimum: const EdgeInsets.all(24),
         child: Column(

@@ -8,6 +8,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import 'package:emotion_diary/feature/emotion_words_view/emotion_categories_view.dart';
+
 class MainPage extends StatefulWidget {
   @override
   _MainPageState createState() => _MainPageState();
@@ -132,6 +134,16 @@ class _MainPageState extends State<MainPage> {
               ),
             ),
             ListTile(
+              leading: const Icon(Icons.emoji_emotions),
+              title: const Text('감정 어휘'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => EmotionCategoryView()),
+                );
+              },
+            ),
+            ListTile(
               leading: const Icon(Icons.book),
               title: const Text('일기 작성하기'),
               onTap: () {
@@ -249,7 +261,7 @@ class _MainPageState extends State<MainPage> {
                                       padding: const EdgeInsets.all(30.0),
                                       child: Image.network(event.imagePath!, width: double.infinity),
                                     ) // 이미지를 상단에 표시
-                                    : Container(height: 200, color: Colors.grey), // 이미지가 없을 경우 대체 요소
+                                    : Container(height: 0), // 이미지가 없을 경우 빈 컨테이너
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Row(

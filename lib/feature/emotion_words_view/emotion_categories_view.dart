@@ -19,10 +19,6 @@ class EmotionCategoryView extends StatelessWidget {
           "감정 어휘",
           style: Theme.of(context).textTheme.titleSmall,
         ),
-        leading: IconButton(
-          icon: const Icon(Icons.list),
-          onPressed: (){},
-        ),
         backgroundColor: Colors.white,
         elevation: 1,
         shadowColor: Colors.black,
