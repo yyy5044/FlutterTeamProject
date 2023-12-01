@@ -6,6 +6,8 @@ import '../writing_diary_view/writing_diary_view.dart';
 import '../authentication/LoginPage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class MainPage extends StatefulWidget {
   @override
   _MainPageState createState() => _MainPageState();
@@ -16,14 +18,47 @@ class _MainPageState extends State<MainPage> {
 
   DateTime today = DateTime.now();
   Map<DateTime, List<Event>> events = {
-    DateTime(2023, 11, 1): [Event('Event 1'), Event("Event2")],
-    DateTime(2023, 11, 25): [Event('Event 2')],
+    // DateTime(2023, 11, 1): [Event('Event 1'), Event("Event2")],
+    // DateTime(2023, 11, 25): [Event('Event 2')],
   };
   late final ValueNotifier<List<Event>> _selectedEvents = ValueNotifier(_getEvents(today));
+
+  // Firestore에서 데이터를 가져오는 함수
+  Future<void> loadEventsFromFirestore() async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    QuerySnapshot querySnapshot = await firestore.collection('diaries').get();
+
+    Map<DateTime, List<Event>> newEvents = {};
+
+    for (var doc in querySnapshot.docs) {
+      var data = doc.data() as Map<String, dynamic>;
+      DateTime date = (data['date'] as Timestamp).toDate();
+      String title = data['diaryText'];
+      String? imagePath = data['image'];
+
+      // Firestore의 날짜를 기준으로 Event 객체를 생성하고 events 맵에 추가
+      DateTime dateWithoutTime = DateTime(date.year, date.month, date.day);
+      var event = Event(title, imagePath: imagePath);
+
+      if (newEvents[dateWithoutTime] != null) {
+        newEvents[dateWithoutTime]!.add(event);
+      } else {
+        newEvents[dateWithoutTime] = [event];
+      }
+    }
+
+    print('Loaded events: $newEvents');
+
+    setState(() {
+      events = newEvents;
+      _selectedEvents.value = _getEvents(today); // 선택된 날짜에 맞는 이벤트 업데이트
+    });
+  }
 
   @override
   void initState() {
     super.initState();
+    loadEventsFromFirestore(); // initState에서 Firestore에서 데이터 로드
     currentUser = FirebaseAuth.instance.currentUser; // 현재 로그인 상태 확인
   }
 
@@ -36,6 +71,7 @@ class _MainPageState extends State<MainPage> {
           style: Theme.of(context).textTheme.titleSmall,
         ),
         actions: [
+          IconButton(onPressed: (){loadEventsFromFirestore();}, icon: Icon(Icons.refresh)),
           if (currentUser != null) // 로그인 상태일 경우
             IconButton(
               icon: Icon(Icons.logout),
@@ -222,12 +258,14 @@ class _MainPageState extends State<MainPage> {
     DateTime dateWithoutTime = DateTime(today.year, today.month, today.day);
     return events[dateWithoutTime] ?? [];
   }
+
 }
 
+// Event 클래스에 이미지 경로를 추가
 class Event {
-  Event(this.title);
+  Event(this.title, {this.imagePath});
   final String title;
-  // 이미지는 String imagepath 로 추가
+  final String? imagePath;
 
   @override
   String toString() {
