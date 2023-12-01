@@ -13,6 +13,5 @@ class Emojis {
     angry,
     surprised,
     sad,
-    smile,
   ];
 }
