@@ -3,6 +3,7 @@ import 'RegisterPage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 // import 'ChatPage.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+import '../main_page/main_page.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -71,12 +72,15 @@ class _LoginFormState extends State<LoginForm> {
                           email: email, password: password);
                       if (currentUser.user != null) {
                         _formKey.currentState!.reset();
+                        Navigator.pushReplacement( // 페이지 전환
+                          context,
+                          MaterialPageRoute(builder: (context) => MainPage()),
+                        );
                       }
-                      setState(() {
-                        saving = false;
-                      });
                     } catch (error) {
                       print(error);
+                      // 에러 처리 로직 (예: 사용자에게 메시지 표시)
+                    } finally {
                       setState(() {
                         saving = false;
                       });

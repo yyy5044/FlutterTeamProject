@@ -3,6 +3,8 @@ import 'package:emotion_diary/common/widgets/black_button.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import '../writing_diary_view/writing_diary_view.dart';
+import '../authentication/LoginPage.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class MainPage extends StatefulWidget {
   @override
@@ -10,6 +12,7 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
+  User? currentUser; // 로그인 상태 변수
 
   DateTime today = DateTime.now();
   Map<DateTime, List<Event>> events = {
@@ -19,6 +22,12 @@ class _MainPageState extends State<MainPage> {
   late final ValueNotifier<List<Event>> _selectedEvents = ValueNotifier(_getEvents(today));
 
   @override
+  void initState() {
+    super.initState();
+    currentUser = FirebaseAuth.instance.currentUser; // 현재 로그인 상태 확인
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -26,6 +35,28 @@ class _MainPageState extends State<MainPage> {
           '일기 작성',
           style: Theme.of(context).textTheme.titleSmall,
         ),
+        actions: [
+          if (currentUser != null) // 로그인 상태일 경우
+            IconButton(
+              icon: Icon(Icons.logout),
+              onPressed: () async {
+                await FirebaseAuth.instance.signOut(); // 로그아웃
+                setState(() {
+                  currentUser = null; // 상태 업데이트
+                });
+              },
+            )
+          else // 로그인 상태가 아닐 경우
+            IconButton(
+              icon: Icon(Icons.person),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginPage()),
+                );
+              },
+            ),
+        ],
         backgroundColor: Colors.white,
         elevation: 1,
         shadowColor: Colors.black,
@@ -36,7 +67,7 @@ class _MainPageState extends State<MainPage> {
           children: [
             const DrawerHeader(
               decoration: BoxDecoration(
-                color: Colors.blue,
+                color: Colors.black54,
               ),
               child: Text(
                 '메뉴',
@@ -56,7 +87,6 @@ class _MainPageState extends State<MainPage> {
                 );
               },
             ),
-            // 여기에 필요한 다른 메뉴 항목들 추가 가능
           ],
         ),
       ),

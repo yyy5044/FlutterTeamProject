@@ -63,7 +63,7 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
           children: [
             const DrawerHeader(
               decoration: BoxDecoration(
-                color: Colors.blue,
+                color: Colors.black54,
               ),
               child: Text(
                 '메뉴',
