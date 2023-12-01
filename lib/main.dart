@@ -8,6 +8,14 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
 void main() async {
+  // Flutter 엔진과 위젯 트리가 바인딩되도록 보장
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Firebase 앱 인스턴스를 초기화
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   await initializeDateFormatting();
   runApp(const MyApp());
 }
