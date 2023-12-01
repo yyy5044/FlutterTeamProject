@@ -503,17 +503,33 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
     // 사용자가 입력한 일기 내용을 diary 변수에 저장
     diary = _diaryFieldController.text;
 
-    final diaryData = {
-      'userId': currentUser.uid,
-      'date': _selectedDate,
-      'emojiIndex': _selectedEmoji,
-      'weatherIndex': _selectedWeather,
-      'emotions': _selectedEmotion,
-      'diaryText': diary, // 여기에 사용자가 입력한 일기 내용을 포함
-      // 'image': _pickedFile, // 사진 처리 필요
-    };
+
+    String? imageUrl; // 이미지 url 변수
 
     try {
+      // Firebase Storage에 이미지 업로드 후 URL 가져오는 코드
+      // 이미지 파일 이름이 겹치지 않게 DateTime.now를 사용했음. 문제 있으면 알려주세요~
+      if (_pickedFile != null) {
+        final file = File(_pickedFile!.path);
+        final ref = firebase_storage.FirebaseStorage.instance
+            .ref()
+            .child('diaryImages')
+            .child('${DateTime.now().toIso8601String()}_${_pickedFile!.name}');
+
+        await ref.putFile(file); // 파일 업로드
+        imageUrl = await ref.getDownloadURL(); // 업로드된 파일의 URL 가져오기
+      }
+
+      final diaryData = {
+        'userId': currentUser.uid,
+        'date': _selectedDate,
+        'emojiIndex': _selectedEmoji,
+        'weatherIndex': _selectedWeather,
+        'emotions': _selectedEmotion,
+        'diaryText': diary, // 여기에 사용자가 입력한 일기 내용을 포함
+        'image': imageUrl, // 업로드된 이미지 URL
+      };
+
       await FirebaseFirestore.instance.collection('diaries').add(diaryData);
       _showDialog('작성되었습니다.');
     } catch (error) {
