@@ -6,6 +6,9 @@ import '../writing_diary_view/writing_diary_view.dart';
 import '../authentication/LoginPage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import 'package:emotion_diary/common/utils/emojis.dart';
+import 'package:emotion_diary/common/utils/weathers.dart';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:emotion_diary/feature/emotion_words_view/emotion_categories_view.dart';
@@ -207,22 +210,38 @@ class _MainPageState extends State<MainPage> {
                       );
                   }
                 },
-                markerBuilder: (context, day, events) { //이모티콘 추가
+                markerBuilder: (context, day, List<Event> events) { //이모티콘 추가
                   if (events.isNotEmpty) {
-                    return ListView.builder(
+                    // return ListView.builder(  이모티콘 여러개 보여줄 때
+                    //   shrinkWrap: true,
+                    //   scrollDirection: Axis.horizontal,
+                    //   itemCount: events.length,
+                    //   itemBuilder: (context, index) {
+                    //     return Container(
+                    //       margin: EdgeInsets.only(top: 30),
+                    //       child: Image(
+                    //         image: AssetImage(
+                    //             Emojis.emojiList[events[index].emoji]),
+                    //         width: 30,
+                    //         height: 30,
+                    //       ),
+                    //     );
+                    //
+                    //   },
+                    // );
+                    return ListView( // 이모티콘 한개만 보여줄 때
                       shrinkWrap: true,
-                      scrollDirection: Axis.horizontal,
-                      itemCount: events.length,
-                      itemBuilder: (context, index) {
-                        return Container(
-                          margin: EdgeInsets.only(top: 40),
-                          child: Icon(
-                            size: 20,
-                            Icons.pets_outlined,
+                      children: [
+                        Container(
+                          margin: EdgeInsets.only(top: 30),
+                          child: Image(
+                            image: AssetImage(
+                                Emojis.emojiList[events[0].emoji]),
+                            width: 25,
+                            height: 25,
                           ),
-                        );
-
-                      },
+                        )
+                      ]
                     );
                   }
                 },
@@ -268,7 +287,13 @@ class _MainPageState extends State<MainPage> {
 
                                       // 이모티콘을 표시
                                       // Icon(getEmoji(event.emoji)), // 일단 비활성화
-                                      Text('Emoji: ${event.emoji}'), // 일단은 텍스트로
+                                      // Text('Emoji: ${event.emoji}'), // 일단은 텍스트로
+                                      Image(
+                                        image: AssetImage(
+                                            Emojis.emojiList[event.emoji]),
+                                        width: 30,
+                                        height: 30,
+                                      ),
                                       SizedBox(width: 10), // 아이콘 간 간격
                                       // 감정 어휘 표시
                                       // Text('Emotion: ${getEmotion(event.emotion)}'), // 일단 비활성화
@@ -276,7 +301,13 @@ class _MainPageState extends State<MainPage> {
                                       SizedBox(width: 10),
                                       // 날씨 정보를 표시
                                       // Icon(getWeather(event.weather)), // 일단 비활성화
-                                      Text('Weather: ${event.weather}'), // 일단은 텍스트로
+                                      //Text('Weather: ${event.weather}'), // 일단은 텍스트로
+                                      Image(
+                                        image: AssetImage(
+                                            Weathers.weatherList[event.weather]),
+                                        width: 30,
+                                        height: 30,
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -308,18 +339,6 @@ class _MainPageState extends State<MainPage> {
         ),
       ),
     );
-  }
-
-  void getEmoji(int index){
-    // TODO: Event객체에 있는 emoji 멤버는 현재 int형인데, 숫자를 받으면 해당하는 이모티콘으로 변환시켜주는 함수를 작성해야 한다.
-  }
-
-  void getEmotion(int index){
-    // TODO: getEmoji와 비슷하게 emotion 값을 받으면 해당하는 감정 어휘로 변환시켜주는 함수를 작성해야 한다.
-  }
-
-  void getWeather(int index){
-    // TODO: weather 값을 받으면 해당하는 날씨 이모티콘으로 변환시켜주는 함수를 작성해야 한다.
   }
 
   void _onDaySelected(DateTime day, DateTime focusedDay) {
