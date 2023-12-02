@@ -325,7 +325,10 @@ class _MainPageState extends State<MainPage> {
                     } else { // 일기 쓴 내역이 없다면
                       return GestureDetector(
                         onTap: () {
-                          print('Tapped');
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => WritingDiaryView()),
+                          );
                         },
                         child: const IconTextboxWithDottedBorder(
                           icon: Icons.add_photo_alternate_outlined,
