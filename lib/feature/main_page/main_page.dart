@@ -26,7 +26,8 @@ class _MainPageState extends State<MainPage> {
     // DateTime(2023, 11, 1): [Event('Event 1'), Event("Event2")],
     // DateTime(2023, 11, 25): [Event('Event 2')],
   };
-  late final ValueNotifier<List<Event>> _selectedEvents = ValueNotifier(_getEvents(today));
+  late final ValueNotifier<List<Event>> _selectedEvents =
+      ValueNotifier(_getEvents(today));
 
   // Firestore에서 데이터를 가져오는 함수
   Future<void> loadEventsFromFirestore() async {
@@ -86,6 +87,14 @@ class _MainPageState extends State<MainPage> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // 로그인 시 데이터 불러오기 기능 동작
+    loadEventsFromFirestore();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -94,14 +103,20 @@ class _MainPageState extends State<MainPage> {
           style: Theme.of(context).textTheme.titleSmall,
         ),
         actions: [
-          IconButton(onPressed: (){loadEventsFromFirestore();}, icon: Icon(Icons.refresh)),
+          IconButton(
+              onPressed: () {
+                loadEventsFromFirestore();
+              },
+              icon: Icon(Icons.refresh)),
           if (currentUser != null) // 로그인 상태일 경우
             IconButton(
               icon: Icon(Icons.logout),
               onPressed: () async {
                 await FirebaseAuth.instance.signOut(); // 로그아웃
+                // 로그아웃 시 데이터 초기화하도록 기능 동작
                 setState(() {
-                  currentUser = null; // 상태 업데이트
+                  events.clear();
+                  currentUser = null;
                 });
               },
             )
@@ -139,7 +154,8 @@ class _MainPageState extends State<MainPage> {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => EmotionCategoryView()),
+                  MaterialPageRoute(
+                      builder: (context) => EmotionCategoryView()),
                 );
               },
             ),
@@ -158,185 +174,199 @@ class _MainPageState extends State<MainPage> {
       ),
       body: SafeArea(
         minimum: const EdgeInsets.all(24),
-        child: Column(
+        child: Wrap(
           children: [
-            TableCalendar(
-              locale: 'ko_KR',
-              focusedDay: today,
-              firstDay: DateTime.utc(2023, 1, 1),
-              lastDay: DateTime.now(),
-              daysOfWeekHeight: 30,
-              headerStyle: const HeaderStyle(
-                titleCentered: true,
-                formatButtonVisible: false,
-                titleTextStyle: TextStyle(
-                  fontSize: 20.0,
-                ),
-                headerPadding: EdgeInsets.symmetric(vertical: 4.0),
-              ),
-              calendarBuilders: CalendarBuilders(
-                dowBuilder: (context, day) {
-                  switch (day.weekday) {
-                    case 1:
-                      return const Center(
-                        child: Text('월'),
-                      );
-                    case 2:
-                      return const Center(
-                        child: Text('화'),
-                      );
-                    case 3:
-                      return const Center(
-                        child: Text('수'),
-                      );
-                    case 4:
-                      return const Center(
-                        child: Text('목'),
-                      );
-                    case 5:
-                      return const Center(
-                        child: Text('금'),
-                      );
-                    case 6:
-                      return const Center(
-                        child: Text('토'),
-                      );
-                    case 7:
-                      return const Center(
-                        child: Text(
-                          '일',
-                          style: TextStyle(color: Colors.red),
-                        ),
-                      );
-                  }
-                },
-                markerBuilder: (context, day, List<Event> events) { //이모티콘 추가
-                  if (events.isNotEmpty) {
-                    // return ListView.builder(  이모티콘 여러개 보여줄 때
-                    //   shrinkWrap: true,
-                    //   scrollDirection: Axis.horizontal,
-                    //   itemCount: events.length,
-                    //   itemBuilder: (context, index) {
-                    //     return Container(
-                    //       margin: EdgeInsets.only(top: 30),
-                    //       child: Image(
-                    //         image: AssetImage(
-                    //             Emojis.emojiList[events[index].emoji]),
-                    //         width: 30,
-                    //         height: 30,
-                    //       ),
-                    //     );
-                    //
-                    //   },
-                    // );
-                    return ListView( // 이모티콘 한개만 보여줄 때
-                      shrinkWrap: true,
-                      children: [
-                        Container(
-                          margin: EdgeInsets.only(top: 30),
-                          child: Image(
-                            image: AssetImage(
-                                Emojis.emojiList[events[0].emoji]),
-                            width: 25,
-                            height: 25,
-                          ),
-                        )
-                      ]
-                    );
-                  }
-                },
-              ),
-              onDaySelected: _onDaySelected,
-              selectedDayPredicate: (day) => isSameDay(day, today),
-
-              eventLoader: _getEvents,
-
-              calendarStyle: const CalendarStyle(
-                markerDecoration:  BoxDecoration(
-                  color: Colors.black,
-                  shape: BoxShape.circle,
-                ),
-              ),
-
-            ),
-            const SizedBox(height: 20,),
-            Expanded(
-              child: ValueListenableBuilder<List<Event>>(
-                  valueListenable: _selectedEvents,
-                  builder: (context, value, _) {
-                    if (value.isNotEmpty) { // 일기 내용이 있다면
-                      return ListView.builder(
-                        itemCount: value.length,
-                        itemBuilder: (context, index) {
-                          Event event = value[index];
-                          return Card( // Material 디자인의 카드 스타일을 적용
-                            child: Column(
-                              children: <Widget>[
-                                event.imagePath != null
-                                    ? Padding(
-                                      padding: const EdgeInsets.all(30.0),
-                                      child: Image.network(event.imagePath!, width: double.infinity),
-                                    ) // 이미지를 상단에 표시
-                                    : Container(height: 0), // 이미지가 없을 경우 빈 컨테이너
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      // TODO: 일단은 텍스트로 표시해뒀는데 각 함수를 구현하고 비활성화라고 적힌 부분을 풀면 됨.
-
-                                      // 이모티콘을 표시
-                                      // Icon(getEmoji(event.emoji)), // 일단 비활성화
-                                      // Text('Emoji: ${event.emoji}'), // 일단은 텍스트로
-                                      Image(
-                                        image: AssetImage(
-                                            Emojis.emojiList[event.emoji]),
-                                        width: 30,
-                                        height: 30,
-                                      ),
-                                      SizedBox(width: 10), // 아이콘 간 간격
-                                      // 감정 어휘 표시
-                                      // Text('Emotion: ${getEmotion(event.emotion)}'), // 일단 비활성화
-                                      Text('Emotion: ${event.emotion}'), // 일단은 텍스트로
-                                      SizedBox(width: 10),
-                                      // 날씨 정보를 표시
-                                      // Icon(getWeather(event.weather)), // 일단 비활성화
-                                      //Text('Weather: ${event.weather}'), // 일단은 텍스트로
-                                      Image(
-                                        image: AssetImage(
-                                            Weathers.weatherList[event.weather]),
-                                        width: 30,
-                                        height: 30,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: SingleChildScrollView( // 내용이 길 경우 스크롤 가능
-                                    child: Text(event.diaryText),
-                                  ),
-                                ),
-                              ],
+            Column(
+              children: [
+                TableCalendar(
+                  locale: 'ko_KR',
+                  focusedDay: today,
+                  firstDay: DateTime.utc(2023, 1, 1),
+                  lastDay: DateTime.now(),
+                  daysOfWeekHeight: 30,
+                  headerStyle: const HeaderStyle(
+                    titleCentered: true,
+                    formatButtonVisible: false,
+                    titleTextStyle: TextStyle(
+                      fontSize: 20.0,
+                    ),
+                    headerPadding: EdgeInsets.symmetric(vertical: 4.0),
+                  ),
+                  calendarBuilders: CalendarBuilders(
+                    dowBuilder: (context, day) {
+                      switch (day.weekday) {
+                        case 1:
+                          return const Center(
+                            child: Text('월'),
+                          );
+                        case 2:
+                          return const Center(
+                            child: Text('화'),
+                          );
+                        case 3:
+                          return const Center(
+                            child: Text('수'),
+                          );
+                        case 4:
+                          return const Center(
+                            child: Text('목'),
+                          );
+                        case 5:
+                          return const Center(
+                            child: Text('금'),
+                          );
+                        case 6:
+                          return const Center(
+                            child: Text('토'),
+                          );
+                        case 7:
+                          return const Center(
+                            child: Text(
+                              '일',
+                              style: TextStyle(color: Colors.red),
                             ),
                           );
-                        },
-                      );
-                    } else { // 일기 쓴 내역이 없다면
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => WritingDiaryView()),
+                      }
+                    },
+                    markerBuilder: (context, day, List<Event> events) {
+                      //이모티콘 추가
+                      if (events.isNotEmpty) {
+                        // return ListView.builder(  이모티콘 여러개 보여줄 때
+                        //   shrinkWrap: true,
+                        //   scrollDirection: Axis.horizontal,
+                        //   itemCount: events.length,
+                        //   itemBuilder: (context, index) {
+                        //     return Container(
+                        //       margin: EdgeInsets.only(top: 30),
+                        //       child: Image(
+                        //         image: AssetImage(
+                        //             Emojis.emojiList[events[index].emoji]),
+                        //         width: 30,
+                        //         height: 30,
+                        //       ),
+                        //     );
+                        //
+                        //   },
+                        // );
+                        return ListView(
+                            // 이모티콘 한개만 보여줄 때
+                            shrinkWrap: true,
+                            children: [
+                              Container(
+                                margin: EdgeInsets.only(top: 30),
+                                child: Image(
+                                  image: AssetImage(
+                                      Emojis.emojiList[events[0].emoji]),
+                                  width: 25,
+                                  height: 25,
+                                ),
+                              )
+                            ]);
+                      }
+                    },
+                  ),
+                  onDaySelected: _onDaySelected,
+                  selectedDayPredicate: (day) => isSameDay(day, today),
+                  eventLoader: _getEvents,
+                  calendarStyle: const CalendarStyle(
+                    markerDecoration: BoxDecoration(
+                      color: Colors.black,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                Expanded(
+                  child: ValueListenableBuilder<List<Event>>(
+                      valueListenable: _selectedEvents,
+                      builder: (context, value, _) {
+                        if (value.isNotEmpty) {
+                          // 일기 내용이 있다면
+                          return ListView.builder(
+                            itemCount: value.length,
+                            itemBuilder: (context, index) {
+                              Event event = value[index];
+                              return Card(
+                                // Material 디자인의 카드 스타일을 적용
+                                child: Column(
+                                  children: <Widget>[
+                                    event.imagePath != null
+                                        ? Padding(
+                                            padding: const EdgeInsets.all(30.0),
+                                            child: Image.network(
+                                                event.imagePath!,
+                                                width: double.infinity),
+                                          ) // 이미지를 상단에 표시
+                                        : Container(
+                                            height: 0), // 이미지가 없을 경우 빈 컨테이너
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          // TODO: 일단은 텍스트로 표시해뒀는데 각 함수를 구현하고 비활성화라고 적힌 부분을 풀면 됨.
+
+                                          // 이모티콘을 표시
+                                          // Icon(getEmoji(event.emoji)), // 일단 비활성화
+                                          // Text('Emoji: ${event.emoji}'), // 일단은 텍스트로
+                                          Image(
+                                            image: AssetImage(
+                                                Emojis.emojiList[event.emoji]),
+                                            width: 30,
+                                            height: 30,
+                                          ),
+                                          SizedBox(width: 10), // 아이콘 간 간격
+                                          // 감정 어휘 표시
+                                          // Text('Emotion: ${getEmotion(event.emotion)}'), // 일단 비활성화
+                                          Text(
+                                              'Emotion: ${event.emotion}'), // 일단은 텍스트로
+                                          SizedBox(width: 10),
+                                          // 날씨 정보를 표시
+                                          // Icon(getWeather(event.weather)), // 일단 비활성화
+                                          //Text('Weather: ${event.weather}'), // 일단은 텍스트로
+                                          Image(
+                                            image: AssetImage(Weathers
+                                                .weatherList[event.weather]),
+                                            width: 30,
+                                            height: 30,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: SingleChildScrollView(
+                                        // 내용이 길 경우 스크롤 가능
+                                        child: Text(event.diaryText),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
                           );
-                        },
-                        child: const IconTextboxWithDottedBorder(
-                          icon: Icons.add_photo_alternate_outlined,
-                          label: "아직 일기를 작성하지 않았어요.",
-                        ),
-                      );
-                    }
-                  }),
+                        } else {
+                          // 일기 쓴 내역이 없다면
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => WritingDiaryView()),
+                              );
+                            },
+                            child: const IconTextboxWithDottedBorder(
+                              icon: Icons.add_photo_alternate_outlined,
+                              label: "아직 일기를 작성하지 않았어요.",
+                            ),
+                          );
+                        }
+                      }),
+                ),
+              ],
             ),
           ],
         ),
@@ -355,7 +385,6 @@ class _MainPageState extends State<MainPage> {
     DateTime dateWithoutTime = DateTime(today.year, today.month, today.day);
     return events[dateWithoutTime] ?? [];
   }
-
 }
 
 // Event 클래스에 이미지 경로를 추가
@@ -373,7 +402,6 @@ class Event {
     required this.emotion,
     required this.weather,
   });
-
 
   @override
   String toString() {
