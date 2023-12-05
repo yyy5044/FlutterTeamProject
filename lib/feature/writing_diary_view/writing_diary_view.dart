@@ -9,14 +9,10 @@ import 'package:emotion_diary/common/widgets/icon_textbox_with_dotted_border.dar
 import 'package:emotion_diary/common/widgets/textform_with_border.dart';
 import 'package:emotion_diary/feature/main_page/event.dart';
 import 'package:emotion_diary/feature/main_page/events_model.dart';
-import 'package:emotion_diary/feature/main_page/main_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
-
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 class WritingDiaryView extends ConsumerStatefulWidget {
   const WritingDiaryView({super.key});
@@ -472,8 +468,11 @@ class _WritingDiaryViewState extends ConsumerState<WritingDiaryView> {
             child: Text('확인'),
             onPressed: () {
               Navigator.of(ctx).pop(); // 다이얼로그 닫기
-              Route route = MaterialPageRoute(builder: (context) => MainPage());
-              Navigator.of(ctx).pushReplacement(route);
+              // Route route = MaterialPageRoute(builder: (context) => MainPage());
+              Navigator.of(ctx).pushReplacementNamed(
+                '/mainpage',
+                arguments: _selectedDate,
+              );
             },
           ),
         ],

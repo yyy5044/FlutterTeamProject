@@ -33,9 +33,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeManager.themeData,
-      home: MainPage(),
-    );
+        title: 'Flutter Demo',
+        theme: ThemeManager.themeData,
+        // home: MainPage(),
+        initialRoute: '/mainpage',
+        routes: {
+          //route별 명칭 지정후 사용하는 방법
+          '/mainpage': (BuildContext context) => MainPage(),
+          '/writing': (BuildContext context) => WritingDiaryView(),
+        });
   }
 }

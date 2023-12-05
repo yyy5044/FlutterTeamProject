@@ -17,22 +17,26 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emotion_diary/feature/emotion_words_view/emotion_categories_view.dart';
 
 class MainPage extends ConsumerStatefulWidget {
+  MainPage({super.key});
+
   @override
   _MainPageState createState() => _MainPageState();
 }
 
 class _MainPageState extends ConsumerState<MainPage> {
   User? currentUser; // 로그인 상태 변수
-
-  DateTime today = DateTime.now();
+  bool isInitiated = false;
+  DateTime? today = DateTime.now();
 
   late Map<DateTime, List<Event>> events;
   late final eventsProvider;
   late final ValueNotifier<List<Event>> _selectedEvents =
-      ValueNotifier(_getEvents(today));
+      ValueNotifier(_getEvents(today!));
 
   @override
   void initState() {
+    // today = widget.targetDateTime != null ? widget.targetDateTime! : today;
+    // print(widget.targetDateTime);
     super.initState();
     currentUser = FirebaseAuth.instance.currentUser; // 현재 로그인 상태 확인
   }
@@ -41,8 +45,14 @@ class _MainPageState extends ConsumerState<MainPage> {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    events = ref.watch(eventsNotifierProvider);
-    eventsProvider = ref.read(eventsNotifierProvider.notifier);
+    today = ModalRoute.of(context)?.settings.arguments as DateTime? ??
+        DateTime.now();
+    if (!isInitiated) {
+      events = ref.watch(eventsNotifierProvider);
+      eventsProvider = ref.read(eventsNotifierProvider.notifier);
+      isInitiated = true;
+    }
+    _selectedEvents.value = _getEvents(today!);
     // 로그인 시 데이터 불러오기 기능 동작
     loadEventsFromFirestore();
   }
@@ -93,7 +103,7 @@ class _MainPageState extends ConsumerState<MainPage> {
 
     setState(() {
       events = newEvents;
-      _selectedEvents.value = _getEvents(today); // 선택된 날짜에 맞는 이벤트 업데이트
+      _selectedEvents.value = _getEvents(today!); // 선택된 날짜에 맞는 이벤트 업데이트
     });
   }
 
@@ -184,7 +194,7 @@ class _MainPageState extends ConsumerState<MainPage> {
             children: [
               TableCalendar(
                 locale: 'ko_KR',
-                focusedDay: today,
+                focusedDay: today!,
                 firstDay: DateTime.utc(2023, 1, 1),
                 lastDay: DateTime.now(),
                 daysOfWeekHeight: 30,
@@ -270,7 +280,7 @@ class _MainPageState extends ConsumerState<MainPage> {
                   },
                 ),
                 onDaySelected: _onDaySelected,
-                selectedDayPredicate: (day) => isSameDay(day, today),
+                selectedDayPredicate: (day) => isSameDay(day, today!),
                 eventLoader: _getEvents,
                 calendarStyle: const CalendarStyle(
                   markerDecoration: BoxDecoration(
@@ -374,7 +384,7 @@ class _MainPageState extends ConsumerState<MainPage> {
   void _onDaySelected(DateTime day, DateTime focusedDay) {
     setState(() {
       today = day;
-      _selectedEvents.value = _getEvents(today);
+      _selectedEvents.value = _getEvents(today!);
     });
   }
 
