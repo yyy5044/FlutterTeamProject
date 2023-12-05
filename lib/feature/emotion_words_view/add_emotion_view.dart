@@ -102,7 +102,8 @@ class AddEmotionView extends StatelessWidget {
                             elevation: 0
                         ),
                         onPressed: (){
-                          FirebaseFirestore.instance.collection("$category").add({
+                          FirebaseFirestore.instance.collection("category/").add({
+                          // FirebaseFirestore.instance.collection("category/").add({
                             'word': emotion.word,
                             'definition': emotion.definition
                           });

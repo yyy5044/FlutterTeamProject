@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emotion_diary/feature/emotion_words_view/add_emotion_view.dart';
 import 'package:emotion_diary/feature/emotion_words_view/emotion_word_detail_view.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 import 'package:emotion_diary/common/utils/colors.dart';
@@ -19,12 +20,6 @@ class EmotionWordsView extends StatefulWidget {
 
 class _EmotionWordsViewState extends State<EmotionWordsView> {
   late List<EmotionModel> emotionList = widget.category.words!;
-
-  @override
-  void initState() {
-    super.initState();
-    loadEmotionWords(widget.category.category!.korean!);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,42 +56,35 @@ class _EmotionWordsViewState extends State<EmotionWordsView> {
         ],
       ),
 
-      body: SafeArea(
-        minimum: const EdgeInsets.all(24),
-        child: GridView.builder(
-          shrinkWrap: true,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 1,
-            childAspectRatio: 402 / 68,
-            mainAxisSpacing: 12,
-          ),
-          itemCount: emotionList.length,
-          itemBuilder: (context, index) {
-            return EmotionListTile(emotion: emotionList[index]);
-          },
-        ),
+      body: StreamBuilder(
+        // stream: FirebaseFirestore.instance.collection('emotions/${widget.category.category!.korean!}').snapshots(),
+        stream: FirebaseFirestore.instance.collection('category/').snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          final docs = snapshot.data!.docs;
+          for (var doc in docs) {
+            emotionList.add(EmotionModel(word: doc['word'], definition: doc['definition']));
+          }
+
+          return GridView.builder(
+            padding: const EdgeInsets.all(24),
+            shrinkWrap: true,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 1,
+              childAspectRatio: 402 / 68,
+              mainAxisSpacing: 12,
+            ),
+            itemCount: emotionList.length,
+            itemBuilder: (context, index) {
+              return EmotionListTile(emotion: emotionList[index]);
+            },
+          );
+        },
       )
     );
-  }
-}
-
-extension on _EmotionWordsViewState {
-
-  Future<void> loadEmotionWords(String category) async {
-    List<EmotionModel> emotions = [];
-
-    QuerySnapshot snapshot = await FirebaseFirestore.instance
-        .collection(category)
-        .get();
-
-    for (var doc in snapshot.docs) {
-      var emotion = doc.data() as EmotionModel;
-      emotions.add(emotion);
-    }
-
-    setState(() {
-      emotionList += emotions;
-    });
   }
 }
 
