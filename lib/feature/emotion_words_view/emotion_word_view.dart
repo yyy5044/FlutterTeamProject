@@ -1,3 +1,4 @@
+import 'package:emotion_diary/feature/emotion_words_view/add_emotion_view.dart';
 import 'package:emotion_diary/feature/emotion_words_view/emotion_word_detail_view.dart';
 import 'package:flutter/material.dart';
 
@@ -43,7 +44,10 @@ class EmotionWordsView extends StatelessWidget {
         actions: [
           IconButton(
             onPressed: (){
-
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => AddEmotionView())
+              );
             },
             icon: const Icon(Icons.add,),
           )
