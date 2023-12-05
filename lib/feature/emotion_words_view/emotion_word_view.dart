@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emotion_diary/feature/emotion_words_view/add_emotion_view.dart';
 import 'package:emotion_diary/feature/emotion_words_view/emotion_word_detail_view.dart';
 import 'package:flutter/material.dart';
@@ -7,11 +8,23 @@ import 'package:emotion_diary/common/utils/theme_manager.dart';
 
 import 'package:emotion_diary/common/model/emotion_model.dart';
 
-class EmotionWordsView extends StatelessWidget {
+class EmotionWordsView extends StatefulWidget {
   EmotionWordsView({super.key, required this.category});
 
   EmotionCategoryModel category;
-  late List<EmotionModel> emotionList = category.words!;
+
+  @override
+  State<EmotionWordsView> createState() => _EmotionWordsViewState();
+}
+
+class _EmotionWordsViewState extends State<EmotionWordsView> {
+  late List<EmotionModel> emotionList = widget.category.words!;
+
+  @override
+  void initState() {
+    super.initState();
+    loadEmotionWords(widget.category.category!.korean!);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +37,7 @@ class EmotionWordsView extends StatelessWidget {
         shadowColor: Colors.black,
 
         title: Text(
-          category!.category!.korean,
+          widget.category!.category!.korean,
           style: Theme.of(context).textTheme.titleSmall,
         ),
 
@@ -40,7 +53,7 @@ class EmotionWordsView extends StatelessWidget {
             onPressed: (){
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => AddEmotionView())
+                MaterialPageRoute(builder: (context) => AddEmotionView(category: widget.category,))
               );
             },
             icon: const Icon(Icons.add,),
@@ -64,6 +77,26 @@ class EmotionWordsView extends StatelessWidget {
         ),
       )
     );
+  }
+}
+
+extension on _EmotionWordsViewState {
+
+  Future<void> loadEmotionWords(String category) async {
+    List<EmotionModel> emotions = [];
+
+    QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection(category)
+        .get();
+
+    for (var doc in snapshot.docs) {
+      var emotion = doc.data() as EmotionModel;
+      emotions.add(emotion);
+    }
+
+    setState(() {
+      emotionList += emotions;
+    });
   }
 }
 

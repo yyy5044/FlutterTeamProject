@@ -1,17 +1,17 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:emotion_diary/common/model/emotion_model.dart';
 import 'package:flutter/material.dart';
 
 import 'package:emotion_diary/common/utils/colors.dart';
 import 'package:emotion_diary/common/utils/theme_manager.dart';
 
-class AddEmotionView extends StatefulWidget {
-  const AddEmotionView({super.key});
+class AddEmotionView extends StatelessWidget {
+  AddEmotionView({super.key, required this.category});
 
-  @override
-  State<AddEmotionView> createState() => _AddEmotionViewState();
-}
-
-class _AddEmotionViewState extends State<AddEmotionView> {
+  EmotionCategoryModel category;
   final _formKey = GlobalKey<FormState>();
+
+  EmotionModel emotion = EmotionModel(word: "", definition: "");
 
   @override
   Widget build(BuildContext context) {
@@ -64,6 +64,10 @@ class _AddEmotionViewState extends State<AddEmotionView> {
                                     border: OutlineInputBorder(),
                                     labelText: "단어"
                                 ),
+
+                                onChanged: (val) {
+                                  emotion.word = val!;
+                                },
                               ),
 
                               const SizedBox(height: 24,),
@@ -75,6 +79,10 @@ class _AddEmotionViewState extends State<AddEmotionView> {
                                 ),
                                 keyboardType: TextInputType.multiline,
                                 maxLines: null,
+
+                                onChanged: (val) {
+                                  emotion.definition = val!;
+                                },
                               ),
                             ],
                           ),
@@ -93,7 +101,13 @@ class _AddEmotionViewState extends State<AddEmotionView> {
                             textStyle: ThemeManager.themeData.textTheme.titleSmall,
                             elevation: 0
                         ),
-                        onPressed: (){},
+                        onPressed: (){
+                          FirebaseFirestore.instance.collection("$category").add({
+                            'word': emotion.word,
+                            'definition': emotion.definition
+                          });
+                          Navigator.pop(context);
+                        },
 
                         child: Container(
                           padding: const EdgeInsets.all(20),
