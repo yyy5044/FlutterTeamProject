@@ -17,7 +17,7 @@ class IconTextboxWithDottedBorder extends StatelessWidget {
       strokeWidth: 2,
       borderType: BorderType.RRect,
       child: Container(
-        constraints: BoxConstraints(maxHeight: 120),
+        constraints: BoxConstraints(maxHeight: 150),
         alignment: Alignment.center,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,

@@ -43,6 +43,7 @@ class _WritingDiaryViewState extends ConsumerState<WritingDiaryView> {
   int _selectedEmotion = 0;
   XFile? _pickedFile;
   String diary = "";
+  bool isUploading = false;
 
   late Map<DateTime, List<Event>> events;
   late EventsNotifier eventsProvider;
@@ -74,162 +75,192 @@ class _WritingDiaryViewState extends ConsumerState<WritingDiaryView> {
         elevation: 1,
         shadowColor: Colors.black,
       ),
-      body: SafeArea(
-        minimum: const EdgeInsets.all(24),
-        child: Column(
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      body: Stack(
+        children: [
+          SafeArea(
+            minimum: const EdgeInsets.all(24),
+            child: Column(
               children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          GestureDetector(
-                            onTapUp: (details) {
-                              showDateSelectingBottomSheet(context);
-                            },
-                            child: Row(
-                              children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                          Row(
+                            children: [
+                              GestureDetector(
+                                onTapUp: (details) {
+                                  showDateSelectingBottomSheet(context);
+                                },
+                                child: Row(
                                   children: [
-                                    Text(
-                                      '${_selectedDate.year}년',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .headlineSmall,
-                                    ),
-                                    Row(
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          "${_selectedDate.month}월 ${_selectedDate.day}일",
+                                          '${_selectedDate.year}년',
                                           style: Theme.of(context)
                                               .textTheme
-                                              .titleLarge,
+                                              .headlineSmall,
+                                        ),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              "${_selectedDate.month}월 ${_selectedDate.day}일",
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .titleLarge,
+                                            ),
+                                          ],
                                         ),
                                       ],
                                     ),
+                                    const Icon(Icons.expand_more),
                                   ],
                                 ),
-                                const Icon(Icons.expand_more),
+                              ),
+                              Expanded(
+                                child: Container(),
+                              ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8.0),
+                                child: IconButton(
+                                    onPressed: () {
+                                      showEmojiSelectingBottomSheet(context);
+                                    },
+                                    icon: Icon(
+                                      Icons.add_reaction,
+                                      color: EmotionDiaryColors.grey0,
+                                    )),
+                              ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8.0),
+                                child: IconButton(
+                                    onPressed: () {
+                                      showWeatherSelectingBottomSheet(context);
+                                    },
+                                    icon: Icon(Icons.thermostat,
+                                        color: EmotionDiaryColors.grey0)),
+                              ),
+                            ],
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 24.0),
+                            child: Row(
+                              children: [
+                                Text(
+                                  "오늘 나의 감정은",
+                                  style: Theme.of(context).textTheme.titleSmall,
+                                ),
+                                Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 4.0),
+                                    child: GestureDetector(
+                                      child: Row(
+                                        children: [
+                                          Text(
+                                            sampleEmotionList[_selectedEmotion],
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .titleSmall,
+                                          ),
+                                          const Icon(Icons.expand_more),
+                                        ],
+                                      ),
+                                      onTapUp: (details) {
+                                        setState(() {
+                                          showEmotionSelectingBottomSheet(
+                                              context);
+                                        });
+                                      },
+                                    )),
+                                Text(
+                                  "이야",
+                                  style: Theme.of(context).textTheme.titleSmall,
+                                ),
                               ],
                             ),
-                          ),
-                          Expanded(
-                            child: Container(),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: IconButton(
-                                onPressed: () {
-                                  showEmojiSelectingBottomSheet(context);
-                                },
-                                icon: Icon(
-                                  Icons.add_reaction,
-                                  color: EmotionDiaryColors.grey0,
-                                )),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: IconButton(
-                                onPressed: () {
-                                  showWeatherSelectingBottomSheet(context);
-                                },
-                                icon: Icon(Icons.thermostat,
-                                    color: EmotionDiaryColors.grey0)),
-                          ),
+                          )
                         ],
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 24.0),
-                        child: Row(
-                          children: [
-                            Text(
-                              "오늘 나의 감정은",
-                              style: Theme.of(context).textTheme.titleSmall,
-                            ),
-                            Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 4.0),
-                                child: GestureDetector(
-                                  child: Row(
-                                    children: [
-                                      Text(
-                                        sampleEmotionList[_selectedEmotion],
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .titleSmall,
-                                      ),
-                                      const Icon(Icons.expand_more),
-                                    ],
-                                  ),
-                                  onTapUp: (details) {
-                                    setState(() {
-                                      showEmotionSelectingBottomSheet(context);
-                                    });
-                                  },
+                    ),
+                  ],
+                ),
+                Visibility(
+                  visible: showSaveButton,
+                  replacement: Expanded(
+                    child: Container(),
+                  ),
+                  child: Expanded(
+                    child: Container(
+                        constraints: const BoxConstraints(maxHeight: 200),
+                        child: Padding(
+                          padding:
+                              const EdgeInsets.only(bottom: 20.0, top: 16.0),
+                          child: Visibility(
+                            visible: _pickedFile != null,
+                            replacement: GestureDetector(
+                                onTapUp: (details) {
+                                  _getPhotoLibraryImage();
+                                },
+                                child: const IconTextboxWithDottedBorder(
+                                  icon: Icons.add_box_outlined,
+                                  label: "사진 추가하기",
                                 )),
-                            Text(
-                              "이야",
-                              style: Theme.of(context).textTheme.titleSmall,
+                            child: Image(
+                              image: FileImage(File(_pickedFile?.path ?? "")),
+                              fit: BoxFit.cover,
                             ),
-                          ],
-                        ),
-                      )
-                    ],
+                          ),
+                        )),
+                  ),
+                ),
+                TextFormWithBorder(
+                  controller: _diaryFieldController,
+                ),
+                Visibility(
+                  visible: showSaveButton,
+                  child: const SizedBox(height: 20),
+                ),
+                Visibility(
+                  visible: showSaveButton,
+                  child: BlackButton(
+                    onPressed: () async {
+                      // 업로드 프로그래스 보여주는 조건 설정
+                      setState(() {
+                        isUploading = true;
+                      });
+
+                      await _saveDiary();
+
+                      setState(() {
+                        isUploading = false;
+                      });
+                    },
+                    label: '일기 작성하기',
                   ),
                 ),
               ],
             ),
-            Visibility(
-              visible: showSaveButton,
-              replacement: Expanded(
-                child: Container(),
-              ),
-              child: Expanded(
-                child: Container(
-                    constraints: const BoxConstraints(maxHeight: 200),
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 20.0, top: 16.0),
-                      child: Visibility(
-                        visible: _pickedFile != null,
-                        replacement: GestureDetector(
-                            onTapUp: (details) {
-                              _getPhotoLibraryImage();
-                            },
-                            child: const IconTextboxWithDottedBorder(
-                              icon: Icons.add_box_outlined,
-                              label: "사진 추가하기",
-                            )),
-                        child: Image(
-                          image: FileImage(File(_pickedFile?.path ?? "")),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    )),
-              ),
-            ),
-            TextFormWithBorder(
-              controller: _diaryFieldController,
-            ),
-            Visibility(
-              visible: showSaveButton,
-              child: const SizedBox(height: 20),
-            ),
-            Visibility(
-              visible: showSaveButton,
-              child: BlackButton(
-                onPressed: () {
-                  _saveDiary();
-                },
-                label: '일기 작성하기',
-              ),
-            ),
-          ],
-        ),
+          ),
+          // 업로드 하는 동안 프로그레스 돌기
+          Visibility(
+              visible: isUploading,
+              child: Container(
+                color: Colors.black45.withAlpha(128),
+                alignment: Alignment.center,
+                child: const SizedBox(
+                  width: 80,
+                  height: 80,
+                  child: CircularProgressIndicator(),
+                ),
+              ))
+        ],
       ),
     );
   }
@@ -450,8 +481,7 @@ class _WritingDiaryViewState extends ConsumerState<WritingDiaryView> {
     );
   }
 
-  // TODO: 데이터 저장 구현하기
-  void _saveDiary() async {
+  Future<void> _saveDiary() async {
     User? currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser == null) {
       _showDialog('로그인을 하셔야 합니다.');
