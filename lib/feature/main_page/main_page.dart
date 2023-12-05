@@ -1,6 +1,9 @@
 import 'package:emotion_diary/common/widgets/icon_textbox_with_dotted_border.dart';
 import 'package:emotion_diary/common/widgets/black_button.dart';
+import 'package:emotion_diary/feature/main_page/event.dart';
+import 'package:emotion_diary/feature/main_page/events_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:table_calendar/table_calendar.dart';
 import '../writing_diary_view/writing_diary_view.dart';
 import '../authentication/LoginPage.dart';
@@ -13,21 +16,36 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:emotion_diary/feature/emotion_words_view/emotion_categories_view.dart';
 
-class MainPage extends StatefulWidget {
+class MainPage extends ConsumerStatefulWidget {
   @override
   _MainPageState createState() => _MainPageState();
 }
 
-class _MainPageState extends State<MainPage> {
+class _MainPageState extends ConsumerState<MainPage> {
   User? currentUser; // 로그인 상태 변수
 
   DateTime today = DateTime.now();
-  Map<DateTime, List<Event>> events = {
-    // DateTime(2023, 11, 1): [Event('Event 1'), Event("Event2")],
-    // DateTime(2023, 11, 25): [Event('Event 2')],
-  };
+
+  late Map<DateTime, List<Event>> events;
+  late final eventsProvider;
   late final ValueNotifier<List<Event>> _selectedEvents =
       ValueNotifier(_getEvents(today));
+
+  @override
+  void initState() {
+    super.initState();
+    currentUser = FirebaseAuth.instance.currentUser; // 현재 로그인 상태 확인
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    events = ref.watch(eventsNotifierProvider);
+    eventsProvider = ref.read(eventsNotifierProvider.notifier);
+    // 로그인 시 데이터 불러오기 기능 동작
+    loadEventsFromFirestore();
+  }
 
   // Firestore에서 데이터를 가져오는 함수
   Future<void> loadEventsFromFirestore() async {
@@ -77,21 +95,6 @@ class _MainPageState extends State<MainPage> {
       events = newEvents;
       _selectedEvents.value = _getEvents(today); // 선택된 날짜에 맞는 이벤트 업데이트
     });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    loadEventsFromFirestore(); // initState에서 Firestore에서 데이터 로드
-    currentUser = FirebaseAuth.instance.currentUser; // 현재 로그인 상태 확인
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    // 로그인 시 데이터 불러오기 기능 동작
-    loadEventsFromFirestore();
   }
 
   @override
@@ -378,27 +381,5 @@ class _MainPageState extends State<MainPage> {
   List<Event> _getEvents(DateTime today) {
     DateTime dateWithoutTime = DateTime(today.year, today.month, today.day);
     return events[dateWithoutTime] ?? [];
-  }
-}
-
-// Event 클래스에 이미지 경로를 추가
-class Event {
-  final String diaryText;
-  final String? imagePath;
-  final int emoji;
-  final int emotion;
-  final int weather;
-
-  Event({
-    required this.diaryText,
-    this.imagePath,
-    required this.emoji,
-    required this.emotion,
-    required this.weather,
-  });
-
-  @override
-  String toString() {
-    return 'Event(title: $diaryText, imagePath: $imagePath, emoji: $emoji, emotion: $emotion, weather: $weather)';
   }
 }
