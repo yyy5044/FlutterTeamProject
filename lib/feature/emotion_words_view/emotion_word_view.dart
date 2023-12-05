@@ -11,13 +11,7 @@ class EmotionWordsView extends StatelessWidget {
   EmotionWordsView({super.key, required this.category});
 
   EmotionCategoryModel category;
-  List<EmotionModel> emotionList = [
-    EmotionModel(word: "test", definition: "afewfawfaewf"),
-    EmotionModel(word: "test", definition: "afewfawfaewf"),
-    EmotionModel(word: "test", definition: "afewfawfaewf"),
-    EmotionModel(word: "test", definition: "afewfawfaewf"),
-    EmotionModel(word: "test", definition: "afewfawfaewf"),
-  ];
+  late List<EmotionModel> emotionList = category.words!;
 
   @override
   Widget build(BuildContext context) {
@@ -98,6 +92,7 @@ class EmotionListTile extends StatelessWidget {
             MaterialPageRoute(builder: (context) => EmotionWordDetailView(emotion: emotion))
           );
         },
+
         style: ElevatedButton.styleFrom(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
@@ -107,6 +102,7 @@ class EmotionListTile extends StatelessWidget {
           textStyle: ThemeManager.themeData.textTheme.headlineSmall,
           elevation: 0
         ),
+
         child: Row(
           children: [
             Text(
@@ -116,9 +112,13 @@ class EmotionListTile extends StatelessWidget {
 
             const SizedBox(width: 16,),
 
-            Text(
-              emotion.definition,
-              style: ThemeManager.themeData.textTheme.bodyMedium,
+            Flexible(
+              child: Text(
+                emotion.definition,
+                overflow: TextOverflow.ellipsis,
+                style: ThemeManager.themeData.textTheme.bodyMedium,
+                maxLines: 1,
+              ),
             )
           ],
         ),
