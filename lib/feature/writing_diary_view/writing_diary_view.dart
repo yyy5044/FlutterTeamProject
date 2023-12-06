@@ -571,7 +571,7 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
         'date': _selectedDate,
         'emojiIndex': _selectedEmoji,
         'weatherIndex': _selectedWeather,
-        'emotions': _selectedEmotion,
+        'emotions': emotions[_selectedEmotion].word,
         'diaryText': diary, // 여기에 사용자가 입력한 일기 내용을 포함
         'image': imageUrl, // 업로드된 이미지 URL
       };

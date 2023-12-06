@@ -1,3 +1,4 @@
+import 'package:emotion_diary/common/model/emotion_model.dart';
 import 'package:emotion_diary/common/widgets/icon_textbox_with_dotted_border.dart';
 import 'package:emotion_diary/common/widgets/black_button.dart';
 import 'package:flutter/material.dart';
@@ -45,12 +46,16 @@ class _MainPageState extends State<MainPage> {
 
     for (var doc in querySnapshot.docs) {
       var data = doc.data() as Map<String, dynamic>;
+
+      // print(emotion);
+      print(data['emotions'].runtimeType);
       DateTime date = (data['date'] as Timestamp).toDate();
       String diaryText = data['diaryText'];
       String? imagePath = data['image'];
       int emoji = data['emojiIndex'];
-      int emotion = data['emotions'];
+      String emotion = data['emotions'];
       int weather = data['weatherIndex'];
+
 
       // 받아온 일기 데이터들로 일기 객체 생성
       Event event = Event(
@@ -236,7 +241,8 @@ class _MainPageState extends State<MainPage> {
                           margin: EdgeInsets.only(top: 30),
                           child: Image(
                             image: AssetImage(
-                                Emojis.emojiList[events[0].emoji]),
+                              EmotionCategoryList.categories[events[0].emoji].category!.imagePath()),
+                                // Emojis.emojiList[events[0].emoji]),
                             width: 25,
                             height: 25,
                           ),
@@ -290,14 +296,16 @@ class _MainPageState extends State<MainPage> {
                                       // Text('Emoji: ${event.emoji}'), // 일단은 텍스트로
                                       Image(
                                         image: AssetImage(
-                                            Emojis.emojiList[event.emoji]),
+                                            EmotionCategoryList.categories[event.emoji].category!.imagePath()),
                                         width: 30,
                                         height: 30,
                                       ),
                                       SizedBox(width: 10), // 아이콘 간 간격
                                       // 감정 어휘 표시
                                       // Text('Emotion: ${getEmotion(event.emotion)}'), // 일단 비활성화
-                                      Text('Emotion: ${event.emotion}'), // 일단은 텍스트로
+                                      Text(event.emotion),// 일단은 텍스트로
+                                      // Text(EmotionCategoryList.categories[event.emotion].category!.korean),
+
                                       SizedBox(width: 10),
                                       // 날씨 정보를 표시
                                       // Icon(getWeather(event.weather)), // 일단 비활성화
@@ -363,7 +371,7 @@ class Event {
   final String diaryText;
   final String? imagePath;
   final int emoji;
-  final int emotion;
+  final String emotion;
   final int weather;
 
   Event({
