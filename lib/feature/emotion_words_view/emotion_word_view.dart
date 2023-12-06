@@ -1,3 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:emotion_diary/feature/emotion_words_view/add_emotion_view.dart';
 import 'package:emotion_diary/feature/emotion_words_view/emotion_word_detail_view.dart';
 import 'package:flutter/material.dart';
 
@@ -6,17 +9,25 @@ import 'package:emotion_diary/common/utils/theme_manager.dart';
 
 import 'package:emotion_diary/common/model/emotion_model.dart';
 
-class EmotionWordsView extends StatelessWidget {
+class EmotionWordsView extends StatefulWidget {
   EmotionWordsView({super.key, required this.category});
 
   EmotionCategoryModel category;
-  List<EmotionModel> emotionList = [
-    EmotionModel(word: "test", definition: "afewfawfaewf"),
-    EmotionModel(word: "test", definition: "afewfawfaewf"),
-    EmotionModel(word: "test", definition: "afewfawfaewf"),
-    EmotionModel(word: "test", definition: "afewfawfaewf"),
-    EmotionModel(word: "test", definition: "afewfawfaewf"),
-  ];
+
+  @override
+  State<EmotionWordsView> createState() => _EmotionWordsViewState();
+}
+
+class _EmotionWordsViewState extends State<EmotionWordsView> {
+  late List<EmotionModel> emotionList = widget.category.words!;
+
+  User? currentUser;
+
+  @override
+  void initState() {
+    super.initState();
+    currentUser = FirebaseAuth.instance.currentUser;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +40,7 @@ class EmotionWordsView extends StatelessWidget {
         shadowColor: Colors.black,
 
         title: Text(
-          category!.category!.korean,
+          widget.category!.category!.korean,
           style: Theme.of(context).textTheme.titleSmall,
         ),
 
@@ -43,27 +54,50 @@ class EmotionWordsView extends StatelessWidget {
         actions: [
           IconButton(
             onPressed: (){
-
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => AddEmotionView(category: widget.category,))
+              );
             },
             icon: const Icon(Icons.add,),
           )
         ],
       ),
 
-      body: SafeArea(
-        minimum: const EdgeInsets.all(24),
-        child: GridView.builder(
-          shrinkWrap: true,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 1,
-            childAspectRatio: 402 / 68,
-            mainAxisSpacing: 12,
-          ),
-          itemCount: emotionList.length,
-          itemBuilder: (context, index) {
-            return EmotionListTile(emotion: emotionList[index]);
-          },
-        ),
+      body: StreamBuilder(
+        stream: FirebaseFirestore.instance
+            .collection('emotion/')
+            .where('userId', isEqualTo: currentUser?.uid ?? '')
+            .where('category', isEqualTo: widget.category.category!.korean)
+            .snapshots(),
+
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          final docs = snapshot.data!.docs;
+          for (var doc in docs) {
+            final emotion = EmotionModel(word: doc['word'], definition: doc['definition']);
+            if (emotionList.contains(emotion)) { continue; }
+            else { emotionList.add(emotion); }
+          }
+          emotionList.removeWhere((a) => a != emotionList.firstWhere((b) => a.word == b.word));
+
+          return GridView.builder(
+            padding: const EdgeInsets.all(24),
+            shrinkWrap: true,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 1,
+              childAspectRatio: 402 / 68,
+              mainAxisSpacing: 12,
+            ),
+            itemCount: emotionList.length,
+            itemBuilder: (context, index) {
+              return EmotionListTile(emotion: emotionList[index]);
+            },
+          );
+        },
       )
     );
   }
@@ -94,6 +128,7 @@ class EmotionListTile extends StatelessWidget {
             MaterialPageRoute(builder: (context) => EmotionWordDetailView(emotion: emotion))
           );
         },
+
         style: ElevatedButton.styleFrom(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
@@ -103,6 +138,7 @@ class EmotionListTile extends StatelessWidget {
           textStyle: ThemeManager.themeData.textTheme.headlineSmall,
           elevation: 0
         ),
+
         child: Row(
           children: [
             Text(
@@ -112,9 +148,13 @@ class EmotionListTile extends StatelessWidget {
 
             const SizedBox(width: 16,),
 
-            Text(
-              emotion.definition,
-              style: ThemeManager.themeData.textTheme.bodyMedium,
+            Flexible(
+              child: Text(
+                emotion.definition,
+                overflow: TextOverflow.ellipsis,
+                style: ThemeManager.themeData.textTheme.bodyMedium,
+                maxLines: 1,
+              ),
             )
           ],
         ),
