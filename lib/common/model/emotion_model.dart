@@ -9,16 +9,32 @@ enum EmotionCategory {
 
   final String korean;
   const EmotionCategory(this.korean);
+
+  // static EmotionCategory category(int num) {
+  //   switch (num) {
+  //     case EmotionCategory.bigSmile: return EmotionCategory.bigSmile;
+  //     case EmotionCategory.smile: return EmotionCategory.smile;
+  //     case EmotionCategory.angry: return EmotionCategory.angry;
+  //     case EmotionCategory.surprised: return EmotionCategory.surprised;
+  //     case EmotionCategory.sad: return EmotionCategory.sad;
+  //     default: return "";
+  //   }
+  // }
 }
 
 extension EmotionCategoryImagePath on EmotionCategory {
   String imagePath() {
     switch (this) {
-      case EmotionCategory.bigSmile: return Emojis.bigSmile;
-      case EmotionCategory.smile: return Emojis.smile;
-      case EmotionCategory.angry: return Emojis.angry;
-      case EmotionCategory.surprised: return Emojis.surprised;
-      case EmotionCategory.sad: return Emojis.sad;
+      case EmotionCategory.bigSmile:
+        return Emojis.bigSmile;
+      case EmotionCategory.smile:
+        return Emojis.smile;
+      case EmotionCategory.angry:
+        return Emojis.angry;
+      case EmotionCategory.surprised:
+        return Emojis.surprised;
+      case EmotionCategory.sad:
+        return Emojis.sad;
     }
   }
 }
