@@ -28,15 +28,19 @@ class WritingDiaryView extends StatefulWidget {
 }
 
 class _WritingDiaryViewState extends State<WritingDiaryView> {
-  List<String> sampleEmotionList = [
-    'sample1',
-    'sample2',
-    'sample3',
-    'sample4',
-    'sample5',
-    'sample6',
-    'sample7',
-  ];
+  // List<String> sampleEmotionList = [
+  //   'sample1',
+  //   'sample2',
+  //   'sample3',
+  //   'sample4',
+  //   'sample5',
+  //   'sample6',
+  //   'sample7',
+  // ];
+
+  List<EmotionModel> emotions = EmotionCategoryList.categories
+      .expand((e) => e.words as List<EmotionModel>)
+      .toList();
 
   TextEditingController _diaryFieldController = TextEditingController();
   DateTime _selectedDate = DateTime.now();
@@ -163,7 +167,7 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
                                   child: Row(
                                     children: [
                                       Text(
-                                        sampleEmotionList[_selectedEmotion],
+                                        emotions[_selectedEmotion].word,
                                         style: Theme
                                             .of(context)
                                             .textTheme
@@ -268,7 +272,7 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
                         stream: FirebaseFirestore.instance
                             .collection('emotion/')
                             .where('userId', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
-                            .where('category', isEqualTo: category!.category!.korean!)
+                            // .where('category', isEqualTo: category!.category!.korean!)
                             .snapshots(),
 
                         builder: (context, snapshot) {
@@ -276,15 +280,16 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
                             return const Center(child: CircularProgressIndicator());
                           }
 
-                          final docs = snapshot.data!.docs;
+                          List docs = snapshot.data!.docs;
 
-                          List<EmotionModel> emotionList = category!.words!;
+                          if (category != null) { emotions = category!.words!; }
+
                           for (var doc in docs) {
                             final emotion = EmotionModel(word: doc['word'], definition: doc['definition']);
-                            if (emotionList.contains(emotion)) { continue; }
-                            else { emotionList.add(emotion); }
+                            if (category == null) { emotions.add(emotion); }
+                            else if (doc['category'] == category!.category!.korean) { emotions.add(emotion); }
                           }
-                          emotionList.removeWhere((a) => a != emotionList.firstWhere((b) => a.word == b.word));
+                          emotions.removeWhere((a) => a != emotions.firstWhere((b) => a.word == b.word));
 
                           return GridView.builder(
                             padding: const EdgeInsets.all(12),
@@ -294,7 +299,7 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
                               childAspectRatio: 402 / 68,
                               mainAxisSpacing: 12,
                             ),
-                            itemCount: emotionList.length,
+                            itemCount: emotions.length,
                             itemBuilder: (context, index) {
                               return Container(
                                 decoration: BoxDecoration(
@@ -310,7 +315,12 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
 
                                 child: ElevatedButton(
                                   onPressed: () {
-
+                                    bottomState(() {
+                                      setState(() {
+                                        _selectedEmotion = index;
+                                        Navigator.pop(context);
+                                      });
+                                    });
                                   },
 
                                   style: ElevatedButton.styleFrom(
@@ -325,13 +335,13 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
 
                                   child: Row(
                                     children: [
-                                      Text(emotionList[index].word, style: ThemeManager.themeData.textTheme.headlineSmall,),
+                                      Text(emotions[index].word, style: ThemeManager.themeData.textTheme.headlineSmall,),
 
                                       const SizedBox(width: 16,),
 
                                       Flexible(
                                         child: Text(
-                                          emotionList[index].definition,
+                                          emotions[index].definition,
                                           overflow: TextOverflow.ellipsis,
                                           style: ThemeManager.themeData.textTheme.bodyMedium,
                                           maxLines: 1,
@@ -403,6 +413,8 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
                                       setState(() {
                                         _selectedEmoji = index;
                                         category = EmotionCategoryList.categories[_selectedEmoji];
+                                        emotions = category!.words!;
+                                        Navigator.pop(context);
                                       });
                                     });
                                   },
@@ -410,7 +422,7 @@ class _WritingDiaryViewState extends State<WritingDiaryView> {
                                     duration: const Duration(milliseconds: 500),
                                     child: Image(
                                       image: AssetImage(
-                                          Emojis.emojiList[index]),
+                                          EmotionCategoryList.categories[index].category!.imagePath()),
                                       width: 60 *
                                           (index == _selectedEmoji ? 1.5 : 1.0),
                                       height:
