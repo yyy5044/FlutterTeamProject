@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:emotion_diary/feature/emotion_words_view/add_emotion_view.dart';
 import 'package:emotion_diary/feature/emotion_words_view/emotion_word_detail_view.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 import 'package:emotion_diary/common/utils/colors.dart';
@@ -20,6 +20,14 @@ class EmotionWordsView extends StatefulWidget {
 
 class _EmotionWordsViewState extends State<EmotionWordsView> {
   late List<EmotionModel> emotionList = widget.category.words!;
+
+  User? currentUser;
+
+  @override
+  void initState() {
+    super.initState();
+    currentUser = FirebaseAuth.instance.currentUser;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,8 +65,12 @@ class _EmotionWordsViewState extends State<EmotionWordsView> {
       ),
 
       body: StreamBuilder(
-        // stream: FirebaseFirestore.instance.collection('emotions/${widget.category.category!.korean!}').snapshots(),
-        stream: FirebaseFirestore.instance.collection('category/').snapshots(),
+        stream: FirebaseFirestore.instance
+            .collection('emotion/')
+            .where('userId', isEqualTo: currentUser?.uid ?? '')
+            .where('category', isEqualTo: widget.category.category!.korean)
+            .snapshots(),
+
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -66,8 +78,11 @@ class _EmotionWordsViewState extends State<EmotionWordsView> {
 
           final docs = snapshot.data!.docs;
           for (var doc in docs) {
-            emotionList.add(EmotionModel(word: doc['word'], definition: doc['definition']));
+            final emotion = EmotionModel(word: doc['word'], definition: doc['definition']);
+            if (emotionList.contains(emotion)) { continue; }
+            else { emotionList.add(emotion); }
           }
+          emotionList.removeWhere((a) => a != emotionList.firstWhere((b) => a.word == b.word));
 
           return GridView.builder(
             padding: const EdgeInsets.all(24),

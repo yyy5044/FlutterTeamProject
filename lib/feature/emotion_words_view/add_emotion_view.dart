@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emotion_diary/common/model/emotion_model.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'package:emotion_diary/common/utils/colors.dart';
@@ -102,11 +103,19 @@ class AddEmotionView extends StatelessWidget {
                             elevation: 0
                         ),
                         onPressed: (){
-                          FirebaseFirestore.instance.collection("category/").add({
-                          // FirebaseFirestore.instance.collection("category/").add({
-                            'word': emotion.word,
-                            'definition': emotion.definition
-                          });
+                          User? currentUser = FirebaseAuth.instance.currentUser;
+                          if (currentUser == null) {
+                            print("로그인 필요");
+                            return;
+                          }
+
+                          FirebaseFirestore.instance.collection("emotion/")
+                            .add({
+                              'userId': currentUser!.uid,
+                              'category': category.category!.korean,
+                              'word': emotion.word,
+                              'definition': emotion.definition
+                            });
                           Navigator.pop(context);
                         },
 
