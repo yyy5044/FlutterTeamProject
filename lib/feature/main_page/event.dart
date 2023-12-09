@@ -3,7 +3,7 @@ class Event {
   final String diaryText;
   final String? imagePath;
   final int emoji;
-  final int emotion;
+  final String emotion;
   final int weather;
 
   Event({

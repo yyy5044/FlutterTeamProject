@@ -101,48 +101,5 @@ class EmotionCategoryTile extends StatelessWidget {
         ),
       ),
     );
-    // return Container(
-    //   decoration: BoxDecoration(
-    //     boxShadow: [
-    //       BoxShadow(
-    //           color: Colors.black.withOpacity(0.1),
-    //           spreadRadius: 0.1,
-    //           blurRadius: 5,
-    //           offset: const Offset(0, 0)
-    //       )
-    //     ]
-    //   ),
-    //   child: ElevatedButton(
-    //       onPressed: (){
-    //
-    //       },
-    //       style: ElevatedButton.styleFrom(
-    //         shape: RoundedRectangleBorder(
-    //           borderRadius: BorderRadius.circular(10),
-    //         ),
-    //         backgroundColor: EmotionDiaryColors.white0,
-    //         foregroundColor: EmotionDiaryColors.black0,
-    //         textStyle: ThemeManager.themeData.textTheme.headlineSmall
-    //       ),
-    //       child: Column(
-    //         mainAxisAlignment: MainAxisAlignment.center,
-    //         crossAxisAlignment: CrossAxisAlignment.center,
-    //         children: [
-    //           Image(
-    //             image: AssetImage(emotion.category!.imagePath()),
-    //             width: 44,
-    //             height: 44,
-    //           ),
-    //
-    //           const SizedBox(height: 8,),
-    //
-    //           Text(
-    //             emotion.category!.korean,
-    //             style: ThemeManager.themeData.textTheme.headlineSmall,
-    //           )
-    //         ],
-    //       )
-    //   ),
-    // );
   }
 }

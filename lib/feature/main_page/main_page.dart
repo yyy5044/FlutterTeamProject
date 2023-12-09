@@ -1,5 +1,5 @@
+import 'package:emotion_diary/common/model/emotion_model.dart';
 import 'package:emotion_diary/common/widgets/icon_textbox_with_dotted_border.dart';
-import 'package:emotion_diary/common/widgets/black_button.dart';
 import 'package:emotion_diary/feature/main_page/event.dart';
 import 'package:emotion_diary/feature/main_page/events_model.dart';
 import 'package:flutter/material.dart';
@@ -8,8 +8,6 @@ import 'package:table_calendar/table_calendar.dart';
 import '../writing_diary_view/writing_diary_view.dart';
 import '../authentication/LoginPage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
-import 'package:emotion_diary/common/utils/emojis.dart';
 import 'package:emotion_diary/common/utils/weathers.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -30,6 +28,7 @@ class _MainPageState extends ConsumerState<MainPage> {
 
   late Map<DateTime, List<Event>> events;
   late final eventsProvider;
+
   late final ValueNotifier<List<Event>> _selectedEvents =
       ValueNotifier(_getEvents(today!));
 
@@ -74,11 +73,14 @@ class _MainPageState extends ConsumerState<MainPage> {
 
     for (var doc in querySnapshot.docs) {
       var data = doc.data() as Map<String, dynamic>;
+
+      // print(emotion);
+      print(data['emotions'].runtimeType);
       DateTime date = (data['date'] as Timestamp).toDate();
       String diaryText = data['diaryText'];
       String? imagePath = data['image'];
       int emoji = data['emojiIndex'];
-      int emotion = data['emotions'];
+      String emotion = data['emotions'].toString();
       int weather = data['weatherIndex'];
 
       // 받아온 일기 데이터들로 일기 객체 생성
@@ -206,6 +208,8 @@ class _MainPageState extends ConsumerState<MainPage> {
                   ),
                   headerPadding: EdgeInsets.symmetric(vertical: 4.0),
                 ),
+                // headerPadding: EdgeInsets.symmetric(vertical: 4.0),
+
                 calendarBuilders: CalendarBuilders(
                   dowBuilder: (context, day) {
                     switch (day.weekday) {
@@ -245,23 +249,6 @@ class _MainPageState extends ConsumerState<MainPage> {
                   markerBuilder: (context, day, List<Event> events) {
                     //이모티콘 추가
                     if (events.isNotEmpty) {
-                      // return ListView.builder(  이모티콘 여러개 보여줄 때
-                      //   shrinkWrap: true,
-                      //   scrollDirection: Axis.horizontal,
-                      //   itemCount: events.length,
-                      //   itemBuilder: (context, index) {
-                      //     return Container(
-                      //       margin: EdgeInsets.only(top: 30),
-                      //       child: Image(
-                      //         image: AssetImage(
-                      //             Emojis.emojiList[events[index].emoji]),
-                      //         width: 30,
-                      //         height: 30,
-                      //       ),
-                      //     );
-                      //
-                      //   },
-                      // );
                       return ListView(
                           // 이모티콘 한개만 보여줄 때
                           shrinkWrap: true,
@@ -269,8 +256,10 @@ class _MainPageState extends ConsumerState<MainPage> {
                             Container(
                               margin: EdgeInsets.only(top: 30),
                               child: Image(
-                                image: AssetImage(
-                                    Emojis.emojiList[events[0].emoji]),
+                                image: AssetImage(EmotionCategoryList
+                                    .categories[events[0].emoji].category!
+                                    .imagePath()),
+                                // Emojis.emojiList[events[0].emoji]),
                                 width: 25,
                                 height: 25,
                               ),
@@ -278,6 +267,42 @@ class _MainPageState extends ConsumerState<MainPage> {
                           ]);
                     }
                   },
+                  // markerBuilder: (context, day, List<Event> events) {
+                  //   //이모티콘 추가
+                  //   if (events.isNotEmpty) {
+                  //     // return ListView.builder(  이모티콘 여러개 보여줄 때
+                  //     //   shrinkWrap: true,
+                  //     //   scrollDirection: Axis.horizontal,
+                  //     //   itemCount: events.length,
+                  //     //   itemBuilder: (context, index) {
+                  //     //     return Container(
+                  //     //       margin: EdgeInsets.only(top: 30),
+                  //     //       child: Image(
+                  //     //         image: AssetImage(
+                  //     //             Emojis.emojiList[events[index].emoji]),
+                  //     //         width: 30,
+                  //     //         height: 30,
+                  //     //       ),
+                  //     //     );
+                  //     //
+                  //     //   },
+                  //     // );
+                  //     return ListView(
+                  //         // 이모티콘 한개만 보여줄 때
+                  //         shrinkWrap: true,
+                  //         children: [
+                  //           Container(
+                  //             margin: EdgeInsets.only(top: 30),
+                  //             child: Image(
+                  //               image: AssetImage(
+                  //                   Emojis.emojiList[events[0].emoji]),
+                  //               width: 25,
+                  //               height: 25,
+                  //             ),
+                  //           )
+                  //         ]);
+                  //   }
+                  // },
                 ),
                 onDaySelected: _onDaySelected,
                 selectedDayPredicate: (day) => isSameDay(day, today!),
@@ -323,16 +348,18 @@ class _MainPageState extends ConsumerState<MainPage> {
                                     // Icon(getEmoji(event.emoji)), // 일단 비활성화
                                     // Text('Emoji: ${event.emoji}'), // 일단은 텍스트로
                                     Image(
-                                      image: AssetImage(
-                                          Emojis.emojiList[event.emoji]),
+                                      image: AssetImage(EmotionCategoryList
+                                          .categories[event.emoji].category!
+                                          .imagePath()),
                                       width: 30,
                                       height: 30,
                                     ),
                                     SizedBox(width: 10), // 아이콘 간 간격
                                     // 감정 어휘 표시
                                     // Text('Emotion: ${getEmotion(event.emotion)}'), // 일단 비활성화
-                                    Text(
-                                        'Emotion: ${event.emotion}'), // 일단은 텍스트로
+                                    Text(event.emotion.toString()), // 일단은 텍스트로
+                                    // Text(EmotionCategoryList.categories[event.emotion].category!.korean),
+
                                     SizedBox(width: 10),
                                     // 날씨 정보를 표시
                                     // Icon(getWeather(event.weather)), // 일단 비활성화
@@ -346,6 +373,7 @@ class _MainPageState extends ConsumerState<MainPage> {
                                   ],
                                 ),
                               ),
+
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: SingleChildScrollView(
@@ -393,3 +421,5 @@ class _MainPageState extends ConsumerState<MainPage> {
     return events[dateWithoutTime] ?? [];
   }
 }
+
+// Event 클래스에 이미지 경로를 추

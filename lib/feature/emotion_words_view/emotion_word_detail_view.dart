@@ -40,115 +40,158 @@ class EmotionWordDetailView extends StatelessWidget {
         ],
       ),
 
-      body: SafeArea(
-        minimum: const EdgeInsets.all(24),
+        body: LayoutBuilder(
+          builder: (context, BoxConstraints viewport) {
+            return SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: viewport.maxHeight
+                ),
+                child: IntrinsicHeight(
+                  child: Container(
+                    padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
 
-        child: Column(
-          children: [
-
-            Container(
-              padding: const EdgeInsets.all(22),
-              decoration: BoxDecoration(
-                color: EmotionDiaryColors.white0,
-                borderRadius: BorderRadius.circular(10),
-                boxShadow: [
-                  BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      spreadRadius: 0.1,
-                      blurRadius: 5,
-                      offset: const Offset(0, 0)
-                  )
-                ]
-              ),
-
-              child: Row(
-                children: [
-                  FittedBox(
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-
                       children: [
-                        Text(
-                          emotion.word,
-                          style: ThemeManager.themeData.textTheme.headlineSmall,
+                        Container(
+                          padding: const EdgeInsets.all(22),
+                          decoration: BoxDecoration(
+                            color: EmotionDiaryColors.white0,
+                            borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  spreadRadius: 0.1,
+                                  blurRadius: 5,
+                                  offset: const Offset(0, 0)
+                              )
+                            ]
+                          ),
+                          width: viewport.maxWidth,
+
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+
+                            children: [
+                              Text(
+                                emotion.word,
+                                style: ThemeManager.themeData.textTheme.headlineSmall,
+                              ),
+
+                              const SizedBox(height: 24,),
+
+                              Text(
+                                emotion.definition,
+                                style: ThemeManager.themeData.textTheme.bodyMedium,
+                              )
+                            ],
+                          ),
                         ),
 
                         const SizedBox(height: 24,),
 
-                        Text(
-                          emotion.definition,
-                          style: ThemeManager.themeData.textTheme.bodyMedium,
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              backgroundColor: EmotionDiaryColors.black0,
+                              foregroundColor: EmotionDiaryColors.white0,
+                              textStyle: ThemeManager.themeData.textTheme.titleSmall,
+                              elevation: 0
+                          ),
+                          onPressed: (){},
+
+                          child: Container(
+                            padding: const EdgeInsets.all(20),
+                            child: const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text("일기 작성하기")
+                              ],
+                            ),
+                          ),
                         )
                       ],
                     ),
-                  )
-                ],
-              ),
-            ),
-
-            const Expanded(child: SizedBox()),
-
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
                   ),
-                  backgroundColor: EmotionDiaryColors.black0,
-                  foregroundColor: EmotionDiaryColors.white0,
-                  textStyle: ThemeManager.themeData.textTheme.titleSmall,
-                  elevation: 0
-              ),
-              onPressed: (){},
-
-              child: Container(
-                padding: const EdgeInsets.all(20),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text("일기 작성하기")
-                  ],
                 ),
               ),
-            )
-          ]
+            );
+          }
         )
-        // child: Expanded(
-        //   flex: 1,
-        //   child: Container(
-        //     padding: const EdgeInsets.all(22),
-        //     decoration: BoxDecoration(
-        //       color: EmotionDiaryColors.white0,
-        //       borderRadius: BorderRadius.circular(10),
-        //       boxShadow: [
-        //         BoxShadow(
-        //           color: Colors.black.withOpacity(0.1),
-        //           spreadRadius: 0.1,
-        //           blurRadius: 5,
-        //           offset: const Offset(0, 0)
-        //         )
-        //       ]
+
+        // child: Column(
+        //   children: [
+        //
+        //     Container(
+        //       padding: const EdgeInsets.all(22),
+        //       decoration: BoxDecoration(
+        //         color: EmotionDiaryColors.white0,
+        //         borderRadius: BorderRadius.circular(10),
+        //         boxShadow: [
+        //           BoxShadow(
+        //               color: Colors.black.withOpacity(0.1),
+        //               spreadRadius: 0.1,
+        //               blurRadius: 5,
+        //               offset: const Offset(0, 0)
+        //           )
+        //         ]
+        //       ),
+        //
+        //       child: Row(
+        //         children: [
+        //           FittedBox(
+        //             child: Column(
+        //               crossAxisAlignment: CrossAxisAlignment.start,
+        //
+        //               children: [
+        //                 Text(
+        //                   emotion.word,
+        //                   style: ThemeManager.themeData.textTheme.headlineSmall,
+        //                 ),
+        //
+        //                 const SizedBox(height: 24,),
+        //
+        //                 Text(
+        //                   emotion.definition,
+        //                   style: ThemeManager.themeData.textTheme.bodyMedium,
+        //                 )
+        //               ],
+        //             ),
+        //           )
+        //         ],
+        //       ),
         //     ),
         //
-        //     child: Column(
-        //       crossAxisAlignment: CrossAxisAlignment.start,
+        //     const Expanded(child: SizedBox()),
         //
-        //       children: [
-        //         Text(
-        //           emotion.word,
-        //           style: ThemeManager.themeData.textTheme.headlineSmall,
+        //     ElevatedButton(
+        //       style: ElevatedButton.styleFrom(
+        //           shape: RoundedRectangleBorder(
+        //             borderRadius: BorderRadius.circular(10),
+        //           ),
+        //           backgroundColor: EmotionDiaryColors.black0,
+        //           foregroundColor: EmotionDiaryColors.white0,
+        //           textStyle: ThemeManager.themeData.textTheme.titleSmall,
+        //           elevation: 0
+        //       ),
+        //       onPressed: (){},
+        //
+        //       child: Container(
+        //         padding: const EdgeInsets.all(20),
+        //         child: const Row(
+        //           mainAxisAlignment: MainAxisAlignment.center,
+        //           children: [
+        //             Text("일기 작성하기")
+        //           ],
         //         ),
-        //
-        //         const SizedBox(height: 24,),
-        //
-        //         Text(
-        //           emotion.definition,
-        //           style: ThemeManager.themeData.textTheme.bodyMedium,
-        //         )
-        //       ],
-        //     ),
-        //   ),
-        // ),
-      )
+        //       ),
+        //     )
+        //   ]
+        // )
+
+
     );
   }
 }

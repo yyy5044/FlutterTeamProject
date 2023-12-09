@@ -36,7 +36,7 @@ class EventsNotifier extends StateNotifier<Map<DateTime, List<Event>>> {
       String diaryText = data['diaryText'];
       String? imagePath = data['image'];
       int emoji = data['emojiIndex'];
-      int emotion = data['emotions'];
+      String emotion = data['emotions'];
       int weather = data['weatherIndex'];
 
       // 받아온 일기 데이터들로 일기 객체 생성

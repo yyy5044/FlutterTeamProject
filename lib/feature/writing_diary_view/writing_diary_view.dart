@@ -1,14 +1,16 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:emotion_diary/common/model/emotion_model.dart';
 import 'package:emotion_diary/common/utils/colors.dart';
-import 'package:emotion_diary/common/utils/emojis.dart';
+import 'package:emotion_diary/common/utils/theme_manager.dart';
 import 'package:emotion_diary/common/utils/weathers.dart';
 import 'package:emotion_diary/common/widgets/black_button.dart';
-import 'package:emotion_diary/common/widgets/emotion_list_button.dart';
 import 'package:emotion_diary/common/widgets/icon_textbox_with_dotted_border.dart';
 import 'package:emotion_diary/common/widgets/textform_with_border.dart';
 import 'package:emotion_diary/feature/main_page/event.dart';
 import 'package:emotion_diary/feature/main_page/events_model.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -22,15 +24,19 @@ class WritingDiaryView extends ConsumerStatefulWidget {
 }
 
 class _WritingDiaryViewState extends ConsumerState<WritingDiaryView> {
-  List<String> sampleEmotionList = [
-    'sample1',
-    'sample2',
-    'sample3',
-    'sample4',
-    'sample5',
-    'sample6',
-    'sample7',
-  ];
+  // List<String> sampleEmotionList = [
+  //   'sample1',
+  //   'sample2',
+  //   'sample3',
+  //   'sample4',
+  //   'sample5',
+  //   'sample6',
+  //   'sample7',
+  // ];
+
+  List<EmotionModel> emotions = EmotionCategoryList.categories
+      .expand((e) => e.words as List<EmotionModel>)
+      .toList();
 
   TextEditingController _diaryFieldController = TextEditingController();
   DateTime _selectedDate = DateTime.now();
@@ -43,6 +49,8 @@ class _WritingDiaryViewState extends ConsumerState<WritingDiaryView> {
 
   late Map<DateTime, List<Event>> events;
   late EventsNotifier eventsProvider;
+
+  EmotionCategoryModel? category;
 
   @override
   void initState() {
@@ -160,7 +168,7 @@ class _WritingDiaryViewState extends ConsumerState<WritingDiaryView> {
                                       child: Row(
                                         children: [
                                           Text(
-                                            sampleEmotionList[_selectedEmotion],
+                                            emotions[_selectedEmotion].word,
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .titleSmall,
@@ -227,10 +235,11 @@ class _WritingDiaryViewState extends ConsumerState<WritingDiaryView> {
                   visible: showSaveButton,
                   child: BlackButton(
                     onPressed: () async {
-                      // 업로드 프로그래스 보여주는 조건 설정
-                      setState(() {
-                        isUploading = true;
-                      });
+                      setState(
+                        () {
+                          isUploading = true;
+                        },
+                      );
 
                       await _saveDiary();
 
@@ -244,18 +253,15 @@ class _WritingDiaryViewState extends ConsumerState<WritingDiaryView> {
               ],
             ),
           ),
-          // 업로드 하는 동안 프로그레스 돌기
           Visibility(
-              visible: isUploading,
-              child: Container(
-                color: Colors.black45.withAlpha(128),
-                alignment: Alignment.center,
-                child: const SizedBox(
-                  width: 80,
-                  height: 80,
-                  child: CircularProgressIndicator(),
-                ),
-              ))
+            visible: isUploading,
+            child: Container(
+              color: Colors.black45.withAlpha(100),
+              child: const Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
+          )
         ],
       ),
     );
@@ -282,26 +288,109 @@ class _WritingDiaryViewState extends ConsumerState<WritingDiaryView> {
                   horizontal: 16.0,
                 ),
                 child: Center(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List<Widget>.generate(
-                        sampleEmotionList.length,
-                        (index) => Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 4.0),
-                          child: EmotionListButton(
-                            onPressed: () {
-                              bottomState(() {
-                                setState(() {
-                                  _selectedEmotion = index;
-                                });
-                              });
-                            },
-                            label: sampleEmotionList[index],
-                          ),
-                        ),
-                      ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 20.0,
+                      horizontal: 16.0,
                     ),
+                    child: Center(
+                        child: StreamBuilder(
+                      stream: FirebaseFirestore.instance
+                          .collection('emotion/')
+                          .where('userId',
+                              isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+                          // .where('category', isEqualTo: category!.category!.korean!)
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
+
+                        List docs = snapshot.data!.docs;
+
+                        if (category != null) {
+                          emotions = category!.words!;
+                        }
+
+                        for (var doc in docs) {
+                          final emotion = EmotionModel(
+                              word: doc['word'], definition: doc['definition']);
+                          if (category == null) {
+                            emotions.add(emotion);
+                          } else if (doc['category'] ==
+                              category!.category!.korean) {
+                            emotions.add(emotion);
+                          }
+                        }
+                        emotions.removeWhere((a) =>
+                            a != emotions.firstWhere((b) => a.word == b.word));
+
+                        return GridView.builder(
+                          padding: const EdgeInsets.all(12),
+                          shrinkWrap: true,
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 1,
+                            childAspectRatio: 402 / 68,
+                            mainAxisSpacing: 12,
+                          ),
+                          itemCount: emotions.length,
+                          itemBuilder: (context, index) {
+                            return Container(
+                              decoration: BoxDecoration(boxShadow: [
+                                BoxShadow(
+                                    color: Colors.black.withOpacity(0.1),
+                                    spreadRadius: 0.1,
+                                    blurRadius: 5,
+                                    offset: const Offset(0, 0))
+                              ]),
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  bottomState(() {
+                                    setState(() {
+                                      _selectedEmotion = index;
+                                      Navigator.pop(context);
+                                    });
+                                  });
+                                },
+                                style: ElevatedButton.styleFrom(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    backgroundColor: EmotionDiaryColors.white0,
+                                    foregroundColor: EmotionDiaryColors.black0,
+                                    textStyle: ThemeManager
+                                        .themeData.textTheme.headlineSmall,
+                                    elevation: 0),
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      emotions[index].word,
+                                      style: ThemeManager
+                                          .themeData.textTheme.headlineSmall,
+                                    ),
+                                    const SizedBox(
+                                      width: 16,
+                                    ),
+                                    Flexible(
+                                      child: Text(
+                                        emotions[index].definition,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: ThemeManager
+                                            .themeData.textTheme.bodyMedium,
+                                        maxLines: 1,
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    )),
                   ),
                 ),
               ),
@@ -359,13 +448,19 @@ class _WritingDiaryViewState extends ConsumerState<WritingDiaryView> {
                             bottomState(() {
                               setState(() {
                                 _selectedEmoji = index;
+                                category = EmotionCategoryList
+                                    .categories[_selectedEmoji];
+                                emotions = category!.words!;
+                                Navigator.pop(context);
                               });
                             });
                           },
                           child: AnimatedSize(
                             duration: const Duration(milliseconds: 500),
                             child: Image(
-                              image: AssetImage(Emojis.emojiList[index]),
+                              image: AssetImage(EmotionCategoryList
+                                  .categories[index].category!
+                                  .imagePath()),
                               width: 60 * (index == _selectedEmoji ? 1.5 : 1.0),
                               height:
                                   60 * (index == _selectedEmoji ? 1.5 : 1.0),
@@ -491,20 +586,33 @@ class _WritingDiaryViewState extends ConsumerState<WritingDiaryView> {
     diary = _diaryFieldController.text;
 
     String? imageUrl; // 이미지 url 변수
+    try {
+      // Firebase Storage에 이미지 업로드 후 URL 가져오는 코드
+      // 이미지 파일 이름이 겹치지 않게 DateTime.now를 사용했음. 문제 있으면 알려주세요~
+      if (_pickedFile != null) {
+        final file = File(_pickedFile!.path);
+        final ref = FirebaseStorage.instance
+            .ref()
+            .child('diaryImages')
+            .child('${DateTime.now().toIso8601String()}_${_pickedFile!.name}');
 
-    final result = await eventsProvider.uploadEventToFirestore(
-      pickedFile: _pickedFile,
-      imageUrl: imageUrl,
-      selectedDate: _selectedDate,
-      selectedEmoji: _selectedEmoji,
-      selectedWeather: _selectedWeather,
-      selectedEmotion: _selectedEmotion,
-      diary: diary,
-    );
+        await ref.putFile(file); // 파일 업로드
+        imageUrl = await ref.getDownloadURL(); // 업로드된 파일의 URL 가져오기
+      }
 
-    if (result) {
+      final diaryData = {
+        'userId': currentUser.uid,
+        'date': _selectedDate,
+        'emojiIndex': _selectedEmoji,
+        'weatherIndex': _selectedWeather,
+        'emotions': emotions[_selectedEmotion].word,
+        'diaryText': diary, // 여기에 사용자가 입력한 일기 내용을 포함
+        'image': imageUrl, // 업로드된 이미지 URL
+      };
+
+      await FirebaseFirestore.instance.collection('diaries').add(diaryData);
       _showDialog('작성되었습니다.');
-    } else {
+    } catch (error) {
       _showDialog('죄송합니다. 다시 시도해주세요.');
     }
   }
