@@ -32,122 +32,129 @@ class _EmotionWordsViewState extends State<EmotionWordsView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: EmotionDiaryColors.white0,
-
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 1,
-        shadowColor: Colors.black,
-
-        title: Text(
-          widget.category!.category!.korean,
-          style: Theme.of(context).textTheme.titleSmall,
+        backgroundColor: EmotionDiaryColors.white0,
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 1,
+          shadowColor: Colors.black,
+          title: Text(
+            widget.category!.category!.korean,
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+          actions: [
+            IconButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => AddEmotionView(
+                              category: widget.category,
+                            )));
+              },
+              icon: const Icon(
+                Icons.add,
+              ),
+            )
+          ],
         ),
+        body: StreamBuilder(
+          stream: FirebaseFirestore.instance
+              .collection('emotion/')
+              .where('userId', isEqualTo: currentUser?.uid ?? '')
+              .where('category', isEqualTo: widget.category.category!.korean)
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
+            final docs = snapshot.data!.docs;
+            for (var doc in docs) {
+              final emotion = EmotionModel(
+                  word: doc['word'], definition: doc['definition']);
+              if (emotionList.contains(emotion)) {
+                continue;
+              } else {
+                emotionList.add(emotion);
+              }
+            }
+            emotionList.removeWhere(
+                (a) => a != emotionList.firstWhere((b) => a.word == b.word));
+
+            return GridView.builder(
+              padding: const EdgeInsets.all(24),
+              shrinkWrap: true,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 1,
+                childAspectRatio: 402 / 68,
+                mainAxisSpacing: 12,
+              ),
+              itemCount: emotionList.length,
+              itemBuilder: (context, index) {
+                return EmotionListTile(
+                    emotion: emotionList[index],
+                    indexTuple: (
+                      EmotionCategory.EmotionCategoryList.indexOf(
+                          widget.category.category!.korean),
+                      index,
+                    ));
+              },
+            );
           },
-        ),
-
-        actions: [
-          IconButton(
-            onPressed: (){
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => AddEmotionView(category: widget.category,))
-              );
-            },
-            icon: const Icon(Icons.add,),
-          )
-        ],
-      ),
-
-      body: StreamBuilder(
-        stream: FirebaseFirestore.instance
-            .collection('emotion/')
-            .where('userId', isEqualTo: currentUser?.uid ?? '')
-            .where('category', isEqualTo: widget.category.category!.korean)
-            .snapshots(),
-
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          final docs = snapshot.data!.docs;
-          for (var doc in docs) {
-            final emotion = EmotionModel(word: doc['word'], definition: doc['definition']);
-            if (emotionList.contains(emotion)) { continue; }
-            else { emotionList.add(emotion); }
-          }
-          emotionList.removeWhere((a) => a != emotionList.firstWhere((b) => a.word == b.word));
-
-          return GridView.builder(
-            padding: const EdgeInsets.all(24),
-            shrinkWrap: true,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 1,
-              childAspectRatio: 402 / 68,
-              mainAxisSpacing: 12,
-            ),
-            itemCount: emotionList.length,
-            itemBuilder: (context, index) {
-              return EmotionListTile(emotion: emotionList[index]);
-            },
-          );
-        },
-      )
-    );
+        ));
   }
 }
 
 class EmotionListTile extends StatelessWidget {
-  const EmotionListTile({super.key, required this.emotion});
+  const EmotionListTile(
+      {super.key, required this.emotion, required this.indexTuple});
 
   final EmotionModel emotion;
+  final (int, int) indexTuple;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        boxShadow: [
-          BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              spreadRadius: 0.1,
-              blurRadius: 5,
-              offset: const Offset(0, 0)
-          )
-        ]
-      ),
+      decoration: BoxDecoration(boxShadow: [
+        BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            spreadRadius: 0.1,
+            blurRadius: 5,
+            offset: const Offset(0, 0))
+      ]),
       child: ElevatedButton(
-        onPressed: (){
+        onPressed: () {
           Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => EmotionWordDetailView(emotion: emotion))
-          );
+              context,
+              MaterialPageRoute(
+                  builder: (context) => EmotionWordDetailView(
+                        emotion: emotion,
+                        indexTuple: indexTuple,
+                      )));
         },
-
         style: ElevatedButton.styleFrom(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          backgroundColor: EmotionDiaryColors.white0,
-          foregroundColor: EmotionDiaryColors.black0,
-          textStyle: ThemeManager.themeData.textTheme.headlineSmall,
-          elevation: 0
-        ),
-
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            backgroundColor: EmotionDiaryColors.white0,
+            foregroundColor: EmotionDiaryColors.black0,
+            textStyle: ThemeManager.themeData.textTheme.headlineSmall,
+            elevation: 0),
         child: Row(
           children: [
             Text(
               emotion.word,
               style: ThemeManager.themeData.textTheme.headlineSmall,
             ),
-
-            const SizedBox(width: 16,),
-
+            const SizedBox(
+              width: 16,
+            ),
             Flexible(
               child: Text(
                 emotion.definition,
