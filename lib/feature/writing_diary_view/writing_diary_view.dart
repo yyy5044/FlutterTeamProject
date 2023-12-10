@@ -17,7 +17,14 @@ import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class WritingDiaryView extends ConsumerStatefulWidget {
-  const WritingDiaryView({super.key});
+  WritingDiaryView({
+    super.key,
+    this.categoryIndex = 0,
+    this.emotionIndex = 0,
+  });
+
+  int categoryIndex;
+  int emotionIndex;
 
   @override
   ConsumerState<WritingDiaryView> createState() => _WritingDiaryViewState();
@@ -55,6 +62,17 @@ class _WritingDiaryViewState extends ConsumerState<WritingDiaryView> {
   @override
   void initState() {
     super.initState();
+
+    setState(() {
+      _selectedEmoji = widget.categoryIndex;
+      _selectedEmotion = widget.emotionIndex;
+
+      category = EmotionCategoryList.categories[_selectedEmoji];
+      emotions = category!.words!;
+    });
+
+    print(_selectedEmoji);
+    print(_selectedEmotion);
   }
 
   @override
@@ -351,6 +369,8 @@ class _WritingDiaryViewState extends ConsumerState<WritingDiaryView> {
                                   bottomState(() {
                                     setState(() {
                                       _selectedEmotion = index;
+                                      print("INDEX : $index");
+
                                       Navigator.pop(context);
                                     });
                                   });
@@ -448,6 +468,7 @@ class _WritingDiaryViewState extends ConsumerState<WritingDiaryView> {
                             bottomState(() {
                               setState(() {
                                 _selectedEmoji = index;
+                                print("INDEX : $index");
                                 category = EmotionCategoryList
                                     .categories[_selectedEmoji];
                                 emotions = category!.words!;
@@ -616,5 +637,4 @@ class _WritingDiaryViewState extends ConsumerState<WritingDiaryView> {
       _showDialog('죄송합니다. 다시 시도해주세요.');
     }
   }
-
 }
