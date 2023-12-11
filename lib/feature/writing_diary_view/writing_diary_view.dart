@@ -100,7 +100,7 @@ class _WritingDiaryViewState extends ConsumerState<WritingDiaryView> {
       body: Stack(
         children: [
           SafeArea(
-            minimum: const EdgeInsets.all(24),
+            minimum: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
             child: Column(
               children: [
                 Row(
