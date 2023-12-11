@@ -118,35 +118,35 @@ class _MainPageState extends ConsumerState<MainPage> {
           '달력',
           style: Theme.of(context).textTheme.titleSmall,
         ),
-        // actions: [
-        //   IconButton(
-        //       onPressed: () {
-        //         loadEventsFromFirestore();
-        //       },
-        //       icon: Icon(Icons.refresh)),
-        //   if (currentUser != null) // 로그인 상태일 경우
-        //     IconButton(
-        //       icon: Icon(Icons.logout),
-        //       onPressed: () async {
-        //         await FirebaseAuth.instance.signOut(); // 로그아웃
-        //         // 로그아웃 시 데이터 초기화하도록 기능 동작
-        //         setState(() {
-        //           events.clear();
-        //           currentUser = null;
-        //         });
-        //       },
-        //     )
-        //   else // 로그인 상태가 아닐 경우
-        //     IconButton(
-        //       icon: Icon(Icons.person),
-        //       onPressed: () {
-        //         Navigator.push(
-        //           context,
-        //           MaterialPageRoute(builder: (context) => LoginPage()),
-        //         );
-        //       },
-        //     ),
-        // ],
+        actions: [
+          if (currentUser != null) // 로그인 상태일 경우
+            IconButton(
+              icon: Icon(Icons.logout),
+              onPressed: () async {
+                await FirebaseAuth.instance.signOut(); // 로그아웃
+                Navigator.pushReplacement(
+                  // 페이지 전환
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginPage()),
+                );
+                // 로그아웃 시 데이터 초기화하도록 기능 동작
+                setState(() {
+                  events.clear();
+                  currentUser = null;
+                });
+              },
+            )
+          else // 로그인 상태가 아닐 경우
+            IconButton(
+              icon: Icon(Icons.person),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginPage()),
+                );
+              },
+            ),
+        ],
         backgroundColor: Colors.white,
         elevation: 1,
         shadowColor: Colors.black,

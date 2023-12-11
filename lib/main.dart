@@ -1,5 +1,6 @@
 import 'package:emotion_diary/common/utils/observes.dart';
 import 'package:emotion_diary/common/utils/theme_manager.dart';
+import 'package:emotion_diary/feature/authentication/LoginPage.dart';
 import 'package:emotion_diary/feature/main_page/main_page.dart';
 import 'package:emotion_diary/feature/writing_diary_view/writing_diary_view.dart';
 import 'package:flutter/material.dart';
@@ -36,9 +37,10 @@ class MyApp extends StatelessWidget {
         title: 'Flutter Demo',
         theme: ThemeManager.themeData,
         // home: MainPage(),
-        initialRoute: '/mainpage',
+        initialRoute: '/login',
         routes: {
           //route별 명칭 지정후 사용하는 방법
+          '/login': (BuildContext context) => const LoginPage(),
           '/mainpage': (BuildContext context) => MainPage(),
           '/writing': (BuildContext context) => WritingDiaryView(),
         });

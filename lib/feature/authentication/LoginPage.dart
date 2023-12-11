@@ -68,11 +68,12 @@ class _LoginFormState extends State<LoginForm> {
                     });
                     try {
                       final currentUser =
-                      await _authentication.signInWithEmailAndPassword(
-                          email: email, password: password);
+                          await _authentication.signInWithEmailAndPassword(
+                              email: email, password: password);
                       if (currentUser.user != null) {
                         _formKey.currentState!.reset();
-                        Navigator.pushReplacement( // 페이지 전환
+                        Navigator.pushReplacement(
+                          // 페이지 전환
                           context,
                           MaterialPageRoute(builder: (context) => MainPage()),
                         );
